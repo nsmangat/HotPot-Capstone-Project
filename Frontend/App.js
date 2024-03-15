@@ -4,13 +4,16 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 
 export default function App() {
-  const [data, setData] = useState("");
+  const [data, setData] = useState(null);
 
   useEffect(() => {
     axios
       .get("http://" + process.env.EXPO_PUBLIC_IP_ADDRESS + ":3000/")
       .then((response) => {
-        setData(response.data);
+        console.log(response)
+        const extractedLocations = response.data.map(entry => entry.location);
+        console.log('Location values:', extractedLocations);
+        setData(extractedLocations);
       })
       .catch((error) => {
         console.error(error);
@@ -22,7 +25,7 @@ export default function App() {
   return (
     <View style={styles.container}>
       <Text>{process.env.EXPO_PUBLIC_IP_ADDRESS}</Text>
-      <Text>Data is: {data}</Text>
+      <Text>Pothole Location: {data}</Text>
       <StatusBar style="auto" />
     </View>
   );
