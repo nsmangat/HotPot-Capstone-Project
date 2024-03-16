@@ -30,7 +30,7 @@ jobs:
       working-directory: Backend
       
     - name: init lint
-      run: npx eslint --init
+      run: npm init @eslint/config
       working-directory: Backend         
 
     - name: Run ESLint
