@@ -1,6 +1,12 @@
 name: ESLint
 
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
 
 jobs:
   lint:
@@ -17,12 +23,12 @@ jobs:
     - name: Use Node.js 21.7
       uses: actions/setup-node@v2
       with:
-        node-version: '21.7'        
-    - working-directory: Backend
-    
+        node-version: '21'
+        
     - name: Install dependencies
       run: npm install
-    - working-directory: Backend
-    
+      working-directory: Backend 
+
     - name: Run ESLint
       run: npm run lint
+      working-directory: Backend 
