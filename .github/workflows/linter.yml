@@ -1,38 +1,20 @@
-name: ESLint
+name: Super-Linter
 
-on:
+on: 
   push:
     branches: [Config-CI/CD-setup]
 
 jobs:
-  lint:
-    name: Lint
+  super-lint:
+    name: Lint code base
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      security-events: write
-      actions: read # only required for a private repository by github/codeql-action/upload-sarif to get the Action run status
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-    - name: Use Node.js 21.7
-      uses: actions/setup-node@v2
-      with:
-        node-version: '21'
-        
-    - name: Install dependencies
-      run: npm install
-      working-directory: Backend
-      
-    - name: Install lint
-      run: npm install eslint
-      working-directory: Backend
-      
-    - name: init lint
-      run: npm init @eslint/config
-      working-directory: Backend         
-
-    - name: Run ESLint
-      run: npx eslint .
-      working-directory: Backend 
+      - name: Run Super-Linter
+        uses: github/super-linter@v4
+        env:
+          DEFAULT_BRANCH: main
+          VALIDATE_JAVASCRIPT_ES: true
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
