@@ -3,7 +3,7 @@ name: ESLint
 on:
   push:
     branches:
-      - main
+      - main, Config-CI/CD-setup
   pull_request:
     branches:
       - main
