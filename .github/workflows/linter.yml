@@ -2,11 +2,7 @@ name: ESLint
 
 on:
   push:
-    branches:
-      - main, Config-CI/CD-setup
-  pull_request:
-    branches:
-      - main
+    branches: [Config-CI/CD-setup]
 
 jobs:
   lint:
