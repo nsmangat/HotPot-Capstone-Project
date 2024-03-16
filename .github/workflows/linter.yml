@@ -27,7 +27,11 @@ jobs:
       
     - name: Install lint
       run: npm install eslint
-      working-directory: Backend       
+      working-directory: Backend
+      
+    - name: init lint
+      run: npx eslint --init
+      working-directory: Backend         
 
     - name: Run ESLint
       run: npx eslint .
