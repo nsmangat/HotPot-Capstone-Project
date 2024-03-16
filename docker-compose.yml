@@ -1,0 +1,17 @@
+version: '3'
+services:
+  server:
+    build: ./Backend
+    command: npm run devStart
+    volumes:
+      - ./Backend:/usr/app/
+      - /usr/app/node_modules
+    ports:
+      - "3000:3000"
+  nginx:
+    image: nginx:latest
+    restart: unless-stopped
+    volumes:
+      - ./Data/nginx:/etc/nginx/conf.d
+    ports:
+      - "80:80"
