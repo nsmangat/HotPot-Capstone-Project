@@ -23,8 +23,12 @@ jobs:
         
     - name: Install dependencies
       run: npm install
-      working-directory: Backend 
+      working-directory: Backend
+      
+    - name: Install lint
+      run: npm install eslint
+      working-directory: Backend       
 
     - name: Run ESLint
-      run: npm run lint
+      run: npx eslint .
       working-directory: Backend 
