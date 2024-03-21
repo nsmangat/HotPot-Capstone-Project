@@ -1,8 +1,8 @@
 name: Super-Linter
 
-on: 
-  push:
-    branches: [Config-CI/CD-setup]
+on:
+  pull-request:
+    branches: [main, Development]
 
 jobs:
   super-lint:
