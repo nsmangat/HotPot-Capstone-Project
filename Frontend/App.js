@@ -28,8 +28,8 @@ export default function App() {
           <Text>{data}</Text>
         </View>
       )}
-    </View>
-  );
+    </View>>><
+  ));
 }
 
 const styles = StyleSheet.create({
