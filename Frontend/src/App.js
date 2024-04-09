@@ -11,7 +11,7 @@ import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 
 const Tab = createBottomTabNavigator();
 
-export default function App() {
+const App = () => {
   return (
     <NavigationContainer>
       <Tab.Navigator
@@ -49,7 +49,7 @@ export default function App() {
       </Tab.Navigator>
     </NavigationContainer>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -57,3 +57,5 @@ const styles = StyleSheet.create({
     backgroundColor: "#D9E9E6", // Set your desired background color here
   },
 });
+
+export default App;

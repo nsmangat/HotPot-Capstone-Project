@@ -1,6 +1,8 @@
 import React from "react";
 import { Text } from "react-native";
 
-export default function History() {
+const History = () => {
   return <Text>History</Text>;
-}
+};
+
+export default History;

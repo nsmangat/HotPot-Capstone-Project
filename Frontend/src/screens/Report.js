@@ -1,6 +1,8 @@
 import React from "react";
 import { Text } from "react-native";
 
-export default function Report() {
+const Report = () => {
   return <Text>Report</Text>;
-}
+};
+
+export default Report;
