@@ -2,7 +2,7 @@ import { StatusBar } from "expo-status-bar";
 import { StyleSheet, Text, View, Button } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-//import { Map, Report, History, Settings } from "./screens";
+// import { Map, Report, History, Settings } from "./screens";
 import History from "./screens/History";
 import Map from "./screens/Map";
 import Settings from "./screens/Settings";
@@ -50,12 +50,5 @@ const App = () => {
     </NavigationContainer>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#D9E9E6", // Set your desired background color here
-  },
-});
 
 export default App;
