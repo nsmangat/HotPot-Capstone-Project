@@ -8,31 +8,98 @@ import {
   StatusBar,
   TouchableOpacity,
   FlatList,
+  Modal,
 } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
 
 const History = () => {
   const [history, setHistory] = useState([
     {
-      location: "Forest Drive,Waterloo, ON, Canada",
+      location: "40 King St S, Waterloo, ON N2J 2W8",
       dateTime: "2024-04-08 10:00 AM",
+      status: "not_fixed",
     },
     {
-      location: "53 Street,Waterloo, AB, Canada",
+      location: "187 King St S #102, Waterloo, ON N2J 1R1",
       dateTime: "2024-04-08 3:00 PM",
+      status: "not_fixed",
     },
     {
-      location: "Domaine Alexandre,Waterloo, QC, Canada",
+      location: "622 King St N Unit 3, Waterloo, ON N2V 0C7",
       dateTime: "2024-04-09 11:00 PM",
+      status: "not_fixed",
+    },
+    {
+      location: "239 Weber St N, Waterloo, ON N2J 3H5",
+      dateTime: "2024-04-09 11:00 PM",
+      status: "fixed",
+    },
+    {
+      location: "2 King St N, Waterloo, ON N2J 1N8",
+      dateTime: "2024-04-09 11:00 PM",
+      status: "fixed",
+    },
+    {
+      location: "103 King St N, Waterloo, ON N2J 2X5",
+      dateTime: "2024-04-09 11:00 PM",
+      status: "fixed",
+    },
+    {
+      location: "150 University Ave W Unit 5B, Waterloo, ON N2L 3E4",
+      dateTime: "2024-04-09 11:00 PM",
+      status: "fixed",
+    },
+    {
+      location: "310 The Boardwalk, Waterloo, ON N2T 0A6",
+      dateTime: "2024-04-09 11:00 PM",
+      status: "not_fixed",
+    },
+    {
+      location: "203 Lester St, Waterloo, ON N2L 0B5",
+      dateTime: "2024-04-09 11:00 PM",
+      status: "fixed",
+    },
+    {
+      location: "355 Erb St. W, Waterloo, ON N2L 1W4",
+      dateTime: "2024-04-09 11:00 PM",
+      status: "fixed",
+    },
+    {
+      location: "14 Princess St W, Waterloo, ON N2L 2X8",
+      dateTime: "2024-04-09 11:00 PM",
+      status: "not_fixed",
     },
   ]);
 
-  const renderItem = ({ item }) => (
-    <View style={styles.list}>
-        <Text style={styles.text}>{item.location}</Text>
-        <Text style={styles.text}>{item.dateTime}</Text>
-    </View>
-  );
+  const [selectedItem, setSelectedItem] = useState(null);
+  const [isHistoryDetailsVisible, setIsHistoryDetailsVisible] = useState(false);
+
+  const toggleDetailsVisible = (item) => {
+    setSelectedItem(item);
+    setIsHistoryDetailsVisible(!isHistoryDetailsVisible);
+  };
+
+  const renderStatusIcon = ({ item }) => {
+    const status = item.status === "fixed" ? "green" : "red";
+
+    return (
+      <TouchableOpacity onPress={() => toggleDetailsVisible(item)}>
+        <View style={styles.historyItem}>
+          <View>
+            <Icon name="circle" size={width * 0.054} color={status} />
+          </View>
+          <View style={styles.historyCol}>
+            <Text style={styles.text}>{item.location}</Text>
+            <Text style={styles.text}>{item.dateTime}</Text>
+          </View>
+        </View>
+      </TouchableOpacity>
+    );
+  };
+
+  const closeHistoryDetails = () => {
+    setIsHistoryDetailsVisible(false);
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -46,13 +113,32 @@ const History = () => {
           <Text style={styles.title}>Location</Text>
           <Text style={styles.title}>Time Reported</Text>
         </View>
-        <View style={styles.itemContainer}>
+        <View style={styles.list}>
           <FlatList
             data={history}
-            renderItem={renderItem}
+            renderItem={renderStatusIcon}
             keyExtractor={(item, index) => index.toString()}
           />
         </View>
+        <Modal
+          visible={isHistoryDetailsVisible}
+          transparent={true}
+          onRequestClose={closeHistoryDetails}
+        >
+          <View style={styles.modalContainer}>
+            <Text style={styles.title}>Report Details</Text>
+            <Text style={styles.text}>Location: {selectedItem?.location}</Text>
+            <Text style={styles.text}>Date Time: {selectedItem?.dateTime}</Text>
+            <Text style={styles.text}>Description: This is description</Text>
+            <Text style={styles.text}>Size: Small</Text>
+            <TouchableOpacity
+              onPress={closeHistoryDetails}
+              style={styles.closeButton}
+            >
+              <Text style={[styles.text, styles.closeButtonText]}>Close</Text>
+            </TouchableOpacity>
+          </View>
+        </Modal>
       </View>
     </SafeAreaView>
   );
@@ -84,7 +170,8 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     marginBottom: height * 0.04,
-    paddingHorizontal: width * 0.05,
+    paddingHorizontal: width * 0.05,    
+    alignItems: "left",
   },
   title: {
     fontSize: width * 0.05,
@@ -92,13 +179,40 @@ const styles = StyleSheet.create({
   },
   text: {
     fontSize: width * 0.04,
+    padding: width * 0.01,
   },
-  list:{
-    justifyContent: "space-between",
+  list: {
+    marginBottom: height * 0.05,
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: height * 0.2,
+    marginLeft: width * 0.03,
+  },
+  historyItem: {
     alignItems: "left",
-    marginBottom: height * 0.04,
-  }
-
+    marginBottom: height * 0.02,
+    flexDirection: "row",
+    maxWidth: "98%",
+  },
+  historyCol: {
+    marginLeft: width * 0.02,
+  },
+  modalContainer: {
+    backgroundColor: "white",
+    padding: width * 0.05,
+    borderRadius: 10,
+    marginHorizontal: width*0.05,
+    marginTop: height * 0.4, 
+    alignItems: "left",
+  },
+  closeButton: {
+    position: "absolute",
+    top: 10,
+    right: 10,
+  },
+  closeButtonText: {
+    fontWeight: "bold",
+  },
 });
 
 export default History;
