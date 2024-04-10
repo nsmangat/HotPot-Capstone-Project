@@ -19,6 +19,7 @@ const Report = () => {
   const [image, setImage] = useState(null);
   const [requiredFieldsFilled, setRequiredFieldsFilled] = useState(false);
 
+  // For uploading image
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
@@ -32,6 +33,7 @@ const Report = () => {
     }
   };
 
+  // Clear all fields after successful submission
   const handleSuccess = () => {
     setLocation("");
     setDetails("");
@@ -39,8 +41,6 @@ const Report = () => {
     setImage(null);
     setRequiredFieldsFilled(false); // Reset requiredFieldsFilled state
   };
-
-  // Clear all fields after successful submission
 
   const handleSubmit = () => {
     //API call later
@@ -58,8 +58,8 @@ const Report = () => {
     ]);
   };
 
+  // Check if the required fields are filled out
   const checkRequiredFields = () => {
-    // Check if all required fields are filled out
     if (location !== "" && details !== "" && description !== "") {
       setRequiredFieldsFilled(true);
     } else {
@@ -102,9 +102,14 @@ const Report = () => {
         value={description}
       />
       <View style={styles.imageContainer}>
-        <TouchableOpacity style={styles.imageButton} onPress={pickImage}>
+        {/* <TouchableOpacity style={styles.imageButton} onPress={pickImage}>
           <Text style={{ color: "white" }}>Upload Image</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
+        <CustomButton
+          title="Upload Image"
+          onPress={pickImage}
+          style={styles.imageButton}
+        />
         {image && <Image source={{ uri: image }} style={styles.image} />}
         {requiredFieldsFilled && (
           <CustomButton
@@ -118,6 +123,7 @@ const Report = () => {
   );
 };
 
+// Component for text inputs
 const CustomTextInput = (props) => {
   return (
     <View style={styles.customTextInputComponent.textInputContainer}>
@@ -134,14 +140,16 @@ const CustomTextInput = (props) => {
         placeholder={props.placeholder}
         onChangeText={(text) => {
           props.onChangeText(text);
-          props.checkRequiredFields();
+          // props.checkRequiredFields();
         }}
+        onEndEditing={(e) => props.checkRequiredFields()}
         value={props.value}
       ></TextInput>
     </View>
   );
 };
 
+// Component for buttons
 const CustomButton = ({ title, onPress, style }) => {
   return (
     <TouchableOpacity style={[styles.button, style]} onPress={onPress}>
@@ -150,6 +158,7 @@ const CustomButton = ({ title, onPress, style }) => {
   );
 };
 
+// Component for screen titles
 const ScreenTitle = (props) => {
   return (
     <View style={styles.titleContainer}>
