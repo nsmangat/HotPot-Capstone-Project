@@ -11,6 +11,7 @@ import {
   Modal,
 } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
+import { BlurView } from "expo-blur";
 
 const History = () => {
   const [history, setHistory] = useState([
@@ -86,7 +87,7 @@ const History = () => {
       <TouchableOpacity onPress={() => toggleDetailsVisible(item)}>
         <View style={styles.historyItem}>
           <View>
-            <Icon name="circle" size={width * 0.054} color={status}/>
+            <Icon name="circle" size={width * 0.054} color={status} />
           </View>
           <View style={styles.historyCol}>
             <Text style={styles.text}>{item.location}</Text>
@@ -124,19 +125,25 @@ const History = () => {
           transparent={true}
           onRequestClose={closeHistoryDetails}
         >
-          <View style={styles.modalContainer}>
-            <Text style={styles.title}>Report Details</Text>
-            <Text style={styles.text}>Location: {selectedItem?.location}</Text>
-            <Text style={styles.text}>Date Time: {selectedItem?.dateTime}</Text>
-            <Text style={styles.text}>Description: This is description</Text>
-            <Text style={styles.text}>Size: Small</Text>
-            <TouchableOpacity
-              onPress={closeHistoryDetails}
-              style={styles.closeButton}
-            >
-              <Text style={[styles.text, styles.closeButtonText]}>Close</Text>
-            </TouchableOpacity>
-          </View>
+          <BlurView intensity={20} style={styles.blurContainer}>
+            <View style={styles.modalContainer}>
+              <Text style={styles.title}>Report Details</Text>
+              <Text style={styles.text}>
+                Location: {selectedItem?.location}
+              </Text>
+              <Text style={styles.text}>
+                Date Time: {selectedItem?.dateTime}
+              </Text>
+              <Text style={styles.text}>Description: This is description</Text>
+              <Text style={styles.text}>Size: Small</Text>
+              <TouchableOpacity
+                onPress={closeHistoryDetails}
+                style={styles.closeButton}
+              >
+                <Icon name="close" size={width * 0.054} />
+              </TouchableOpacity>
+            </View>
+          </BlurView>
         </Modal>
       </View>
     </View>
@@ -170,7 +177,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     marginBottom: height * 0.04,
-    paddingHorizontal: width * 0.05,    
+    paddingHorizontal: width * 0.05,
     alignItems: "left",
   },
   title: {
@@ -179,7 +186,6 @@ const styles = StyleSheet.create({
   },
   text: {
     fontSize: width * 0.04,
-    //padding: width * 0.01,
   },
   list: {
     marginBottom: height * 0.05,
@@ -193,23 +199,23 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     maxWidth: width * 0.97,
   },
-  historyCol: {
-  },
+  historyCol: {},
   modalContainer: {
     backgroundColor: "white",
     padding: width * 0.05,
     borderRadius: 10,
-    marginHorizontal: width*0.05,
-    marginTop: height * 0.4, 
+    marginHorizontal: width * 0.05,
+    marginTop: height * 0.4,
     alignItems: "left",
   },
   closeButton: {
     position: "absolute",
-    top: 10,
     right: 10,
+    top: 10,
   },
-  closeButtonText: {
-    fontWeight: "bold",
+  blurContainer: {
+    flex: 1,
+    overflow: "hidden",
   },
 });
 
