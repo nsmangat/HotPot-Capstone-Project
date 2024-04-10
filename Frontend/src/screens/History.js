@@ -86,7 +86,7 @@ const History = () => {
       <TouchableOpacity onPress={() => toggleDetailsVisible(item)}>
         <View style={styles.historyItem}>
           <View>
-            <Icon name="circle" size={width * 0.054} color={status} />
+            <Icon name="circle" size={width * 0.054} color={status}/>
           </View>
           <View style={styles.historyCol}>
             <Text style={styles.text}>{item.location}</Text>
@@ -102,8 +102,7 @@ const History = () => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <StatusBar />
+    <View style={styles.container}>
       <View style={styles.container}>
         <View style={styles.headerContainer}>
           <Icon name="history" size={50} color="#1C6758" />
@@ -140,7 +139,7 @@ const History = () => {
           </View>
         </Modal>
       </View>
-    </SafeAreaView>
+    </View>
   );
 };
 
@@ -150,8 +149,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#D9E9E6",
-    paddingHorizontal: width * 0.05,
+    padding: width * 0.03,
     paddingTop: height * 0.05,
+    paddingBottom: height * 0.06,
   },
   headerContainer: {
     flexDirection: "row",
@@ -179,23 +179,21 @@ const styles = StyleSheet.create({
   },
   text: {
     fontSize: width * 0.04,
-    padding: width * 0.01,
+    //padding: width * 0.01,
   },
   list: {
     marginBottom: height * 0.05,
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: height * 0.2,
     marginLeft: width * 0.03,
   },
   historyItem: {
     alignItems: "left",
     marginBottom: height * 0.02,
     flexDirection: "row",
-    maxWidth: "98%",
+    maxWidth: width * 0.97,
   },
   historyCol: {
-    marginLeft: width * 0.02,
   },
   modalContainer: {
     backgroundColor: "white",
