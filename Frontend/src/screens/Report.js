@@ -11,8 +11,9 @@ import {
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
-import { useTheme } from '../components/themeContext';
+import { useTheme } from "../components/themeContext";
 import ThemedText from "../components/themeText";
+import ScreenTitle from "../components/header";
 
 const Report = () => {
   const [location, setLocation] = useState("");
@@ -20,7 +21,7 @@ const Report = () => {
   const [description, setDescription] = useState("");
   const [image, setImage] = useState(null);
   const [requiredFieldsFilled, setRequiredFieldsFilled] = useState(false);
-  const { theme, themes, toggleTheme } = useTheme(); 
+  const { theme, themes, toggleTheme } = useTheme();
   const currentTheme = themes[theme];
 
   // For uploading image
@@ -72,7 +73,13 @@ const Report = () => {
   };
 
   return (
-    <View style={[styles.pageView, ,{ backgroundColor: currentTheme.backgroundColor }]}>
+    <View
+      style={[
+        styles.pageView,
+        ,
+        { backgroundColor: currentTheme.backgroundColor },
+      ]}
+    >
       <ScreenTitle name="file-document" title="Report a Pothole" />
       <View style={styles.customTextInputComponent.textInputContainer}>
         <ThemedText>
@@ -162,36 +169,14 @@ const CustomButton = ({ title, onPress, style }) => {
   );
 };
 
-// Component for screen titles
-const ScreenTitle = (props) => {
-  return (
-    <View style={styles.titleContainer}>
-      <MaterialCommunityIcons name={props.name} size={50} color="#1C6758" />
-      <Text style={styles.screenTitle}>{props.title}</Text>
-    </View>
-  );
-};
-
 const { width, height } = Dimensions.get("window");
 
 const styles = StyleSheet.create({
-  screenTitle: {
-    color: "#1C6758",
-    fontSize: width * 0.1,
-    fontWeight: "bold",
-    marginLeft: width * 0.05,
-  },
-  titleContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: height * 0.02,
-    paddingHorizontal: width * 0.05,
-  },
   pageView: {
-    backgroundColor: "#D9E9E6",
     flex: 1,
-    paddingTop: height * 0.05,
-    // paddingHorizontal: width * 0.02,
+    padding: width * 0.03,
+    paddingTop: height * 0.1,
+    paddingBottom: height * 0.12,
   },
   image: {
     width: "85%",

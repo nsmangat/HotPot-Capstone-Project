@@ -7,8 +7,9 @@ import {
   TouchableOpacity,
 } from "react-native";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
-import { useTheme } from '../components/themeContext';
+import { useTheme } from "../components/themeContext";
 import ThemedText from "../components/themeText";
+import ScreenTitle from "../components/header";
 
 const Settings = () => {
   const [isPushNotification, setPushNotification] = useState(true);
@@ -17,44 +18,45 @@ const Settings = () => {
     console.log("push" + !isPushNotification);
   };
 
-  const { theme, themes, toggleTheme } = useTheme(); 
+  const { theme, themes, toggleTheme } = useTheme();
   const currentTheme = themes[theme];
 
   return (
-      <View style={[styles.container,{ backgroundColor: currentTheme.backgroundColor }]}>
-        <View style={styles.headerContainer}>
-          <Icon name="cog" size={50} color="#1C6758" />
-          <ThemedText style={styles.header}>Settings</ThemedText>
-        </View>
-        <View style={styles.itemContainer}>
-          <ThemedText style={styles.text}>Push Notification</ThemedText>
-          <Switch
-            value={isPushNotification}
-            onValueChange={togglePushNotification}
-          />
-        </View>
-        <View style={styles.itemContainer}>
-          <ThemedText style={styles.text}>Dark Mode</ThemedText>
-          {/* <Switch value={isDarkMode} onValueChange={toggleDarkMode} /> */}
-          <Switch value={theme === 'dark'} onValueChange={toggleTheme}/>
-        </View>
-        <View style={styles.separator}></View>
-        <View style={styles.itemContainer}>
-          <ThemedText style={styles.moreText}>More</ThemedText>
-        </View>
-        <TouchableOpacity style={styles.itemContainer}>
-          <ThemedText style={styles.text}>About Us</ThemedText>
-          <Icon name="chevron-right" size={width * 0.05} color="#4B4B4B" />
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.itemContainer}>
-          <ThemedText style={styles.text}>Privacy Policy</ThemedText>
-          <Icon name="chevron-right" size={width * 0.05} color="#4B4B4B" />
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.itemContainer}>
-          <ThemedText style={styles.text}>Terms and conditions</ThemedText>
-          <Icon name="chevron-right" size={width * 0.05} color="#4B4B4B" />
-        </TouchableOpacity>
+    <View
+      style={[
+        styles.container,
+        { backgroundColor: currentTheme.backgroundColor },
+      ]}
+    >
+      <ScreenTitle name="cog" title="Setting" />
+      <View style={styles.itemContainer}>
+        <ThemedText style={styles.text}>Push Notification</ThemedText>
+        <Switch
+          value={isPushNotification}
+          onValueChange={togglePushNotification}
+        />
       </View>
+      <View style={styles.itemContainer}>
+        <ThemedText style={styles.text}>Dark Mode</ThemedText>
+        <Switch value={theme === "dark"} onValueChange={toggleTheme} />
+      </View>
+      <View style={styles.separator}></View>
+      <View style={styles.itemContainer}>
+        <ThemedText style={styles.moreText}>More</ThemedText>
+      </View>
+      <TouchableOpacity style={styles.itemContainer}>
+        <ThemedText style={styles.text}>About Us</ThemedText>
+        <Icon name="chevron-right" size={width * 0.05} color="#4B4B4B" />
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.itemContainer}>
+        <ThemedText style={styles.text}>Privacy Policy</ThemedText>
+        <Icon name="chevron-right" size={width * 0.05} color="#4B4B4B" />
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.itemContainer}>
+        <ThemedText style={styles.text}>Terms and conditions</ThemedText>
+        <Icon name="chevron-right" size={width * 0.05} color="#4B4B4B" />
+      </TouchableOpacity>
+    </View>
   );
 };
 
@@ -63,21 +65,9 @@ const { width, height } = Dimensions.get("window");
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    //backgroundColor: "#D9E9E6",
     padding: width * 0.03,
     paddingTop: height * 0.1,
-  },
-  headerContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: height * 0.05,
-    paddingHorizontal: width * 0.05,
-  },
-  header: {
-    color: "#1C6758",
-    fontSize: width * 0.1,
-    fontWeight: "bold",
-    marginLeft: width * 0.05,
+    paddingBottom: height * 0.12,
   },
   itemContainer: {
     flexDirection: "row",
@@ -92,7 +82,7 @@ const styles = StyleSheet.create({
   separator: {
     height: 1,
     backgroundColor: "black",
-    marginVertical: height * 0.05, 
+    marginVertical: height * 0.05,
   },
   moreText: {
     marginRight: width * 0.3,

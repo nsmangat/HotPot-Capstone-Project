@@ -12,8 +12,9 @@ import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { BlurView } from "expo-blur";
 import Swipeable from "react-native-gesture-handler/Swipeable";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { useTheme } from '../components/themeContext';
+import { useTheme } from "../components/themeContext";
 import ThemedText from "../components/themeText";
+import ScreenTitle from "../components/header";
 
 const History = () => {
   const { theme, themes } = useTheme();
@@ -124,50 +125,53 @@ const History = () => {
   };
 
   return (
-    //<View style={styles.container}>
-      <View style={[styles.container, { backgroundColor: currentTheme.backgroundColor }]}>
-        <View style={styles.headerContainer}>
-          <Icon name="history" size={50} color="#1C6758" />
-          <ThemedText style={styles.header}>Reports History</ThemedText>
-        </View>
-        <View style={styles.itemContainer}>
-          <ThemedText style={styles.title}>Location</ThemedText>
-          <ThemedText style={styles.title}>Time Reported</ThemedText>
-        </View>
-        <View style={styles.list}>
-          <FlatList
-            data={history}
-            renderItem={renderHistoryRow}
-            keyExtractor={(item, index) => index.toString()}
-          />
-        </View>
-        <Modal
-          visible={isHistoryDetailsVisible}
-          transparent={true}
-          onRequestClose={closeHistoryDetails}
-        >
-          <BlurView intensity={20} style={styles.blurContainer}>
-            <View style={styles.modalContainer}>
-              <ThemedText style={styles.title}>Report Details</ThemedText>
-              <ThemedText style={styles.text}>
-                Location: {selectedItem?.location}
-              </ThemedText>
-              <ThemedText style={styles.text}>
-                Date Time: {selectedItem?.dateTime}
-              </ThemedText>
-              <ThemedText style={styles.text}>Description: This is description</ThemedText>
-              <ThemedText style={styles.text}>Size: Small</ThemedText>
-              <TouchableOpacity
-                onPress={closeHistoryDetails}
-                style={styles.closeButton}
-              >
-                <Icon name="close" size={width * 0.054} />
-              </TouchableOpacity>
-            </View>
-          </BlurView>
-        </Modal>
+    <View
+      style={[
+        styles.container,
+        { backgroundColor: currentTheme.backgroundColor },
+      ]}
+    >
+      <ScreenTitle name="history" title="Reports History" />
+
+      <View style={styles.itemContainer}>
+        <ThemedText style={styles.title}>Location</ThemedText>
+        <ThemedText style={styles.title}>Time Reported</ThemedText>
       </View>
-    //</View>
+      <View style={styles.list}>
+        <FlatList
+          data={history}
+          renderItem={renderHistoryRow}
+          keyExtractor={(item, index) => index.toString()}
+        />
+      </View>
+      <Modal
+        visible={isHistoryDetailsVisible}
+        transparent={true}
+        onRequestClose={closeHistoryDetails}
+      >
+        <BlurView intensity={20} style={styles.blurContainer}>
+          <View style={styles.modalContainer}>
+            <ThemedText style={styles.title}>Report Details</ThemedText>
+            <ThemedText style={styles.text}>
+              Location: {selectedItem?.location}
+            </ThemedText>
+            <ThemedText style={styles.text}>
+              Date Time: {selectedItem?.dateTime}
+            </ThemedText>
+            <ThemedText style={styles.text}>
+              Description: This is description
+            </ThemedText>
+            <ThemedText style={styles.text}>Size: Small</ThemedText>
+            <TouchableOpacity
+              onPress={closeHistoryDetails}
+              style={styles.closeButton}
+            >
+              <Icon name="close" size={width * 0.054} />
+            </TouchableOpacity>
+          </View>
+        </BlurView>
+      </Modal>
+    </View>
   );
 };
 
@@ -176,22 +180,9 @@ const { width, height } = Dimensions.get("window");
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#D9E9E6",
     padding: width * 0.03,
     paddingTop: height * 0.1,
     paddingBottom: height * 0.12,
-  },
-  headerContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: height * 0.05,
-    paddingHorizontal: width * 0.05,
-  },
-  header: {
-    color: "#1C6758",
-    fontSize: width * 0.09,
-    fontWeight: "bold",
-    marginLeft: width * 0.05,
   },
   itemContainer: {
     flexDirection: "row",
