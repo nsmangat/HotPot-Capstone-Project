@@ -1,7 +1,7 @@
 import React from "react";
-import { Button, Text, View } from "react-native";
+import { Text, View } from "react-native";
 import styles from "../components/styles";
-import MapView, { Callout, MapCallout, Marker } from "react-native-maps";
+import MapView, { Callout, Marker } from "react-native-maps";
 import { useState } from "react";
 
 
