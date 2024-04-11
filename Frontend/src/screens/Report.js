@@ -192,11 +192,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 10,
     borderRadius: 10,
-    // marginBottom: 10,
   },
   submitButton: {
     backgroundColor: "#1C6758",
-    paddingHorizontal: width * 0.4,
+    paddingHorizontal: width * 0.3,
     paddingVertical: height * 0.02,
     borderRadius: 10,
     alignSelf: "center",
