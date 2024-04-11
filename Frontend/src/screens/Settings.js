@@ -96,7 +96,7 @@ const styles = StyleSheet.create({
   separator: {
     height: 1,
     backgroundColor: "black",
-    marginVertical: height * 0.05, 
+    marginVertical: height * 0.05,
   },
   moreText: {
     marginRight: width * 0.3,

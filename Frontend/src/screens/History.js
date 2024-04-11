@@ -7,12 +7,12 @@ import {
   TouchableOpacity,
   FlatList,
   Modal,
-  Alert
+  Alert,
 } from "react-native";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { BlurView } from "expo-blur";
-import Swipeable from 'react-native-gesture-handler/Swipeable';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import Swipeable from "react-native-gesture-handler/Swipeable";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 const History = () => {
   const [history, setHistory] = useState([
@@ -81,38 +81,39 @@ const History = () => {
     setIsHistoryDetailsVisible(!isHistoryDetailsVisible);
   };
 
-  const deleteRow = (item) =>{
+  const deleteRow = (item) => {
     console.log("Remove item: " + item.location);
-    Alert.alert('Success', 'Deleted successfully');
-  }
+    Alert.alert("Success", "Deleted successfully");
+  };
 
   const renderHistoryRow = ({ item }) => {
     const status = item.status === "fixed" ? "green" : "red";
     const rightSwipeActions = () => {
       return (
         <TouchableOpacity onPress={() => deleteRow(item)}>
-          <Icon name="delete" size={width * 0.07} style={styles.deleteButton}/>
+          <Icon name="delete" size={width * 0.07} style={styles.deleteButton} />
         </TouchableOpacity>
-        )};
+      );
+    };
 
     return (
       <GestureHandlerRootView>
-      <Swipeable renderRightActions={rightSwipeActions}>
-      <TouchableOpacity onPress={() => toggleDetailsVisible(item)}>
-        <View style={styles.historyItem}>
-          <View>
-            <Icon name="circle" size={width * 0.054} color={status} />
-          </View>
-          <View style={styles.historyCol}>
-            <Text style={styles.text}>{item.location}</Text>
-            <Text style={styles.text}>{item.dateTime}</Text>
-          </View>
-        </View>
-      </TouchableOpacity>
-      </Swipeable>
+        <Swipeable renderRightActions={rightSwipeActions}>
+          <TouchableOpacity onPress={() => toggleDetailsVisible(item)}>
+            <View style={styles.historyItem}>
+              <View>
+                <Icon name="circle" size={width * 0.054} color={status} />
+              </View>
+              <View style={styles.historyCol}>
+                <Text style={styles.text}>{item.location}</Text>
+                <Text style={styles.text}>{item.dateTime}</Text>
+              </View>
+            </View>
+          </TouchableOpacity>
+        </Swipeable>
       </GestureHandlerRootView>
     );
-  }; 
+  };
 
   const closeHistoryDetails = () => {
     setIsHistoryDetailsVisible(false);
@@ -233,8 +234,8 @@ const styles = StyleSheet.create({
     flex: 1,
     overflow: "hidden",
   },
-  deleteButton:{
-    backgroundColor:"red",
+  deleteButton: {
+    backgroundColor: "red",
     color: "white",
   },
 });
