@@ -4,12 +4,10 @@ import {
   Text,
   Switch,
   StyleSheet,
-  SafeAreaView,
   Dimensions,
-  StatusBar,
   TouchableOpacity,
 } from "react-native";
-import Icon from "react-native-vector-icons/FontAwesome";
+import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
 const Settings = () => {
   const [isDarkMode, setIsDarkMode] = useState(false);
@@ -26,8 +24,7 @@ const Settings = () => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <StatusBar />
+    <View style={styles.container}>
       <View style={styles.container}>
         <View style={styles.headerContainer}>
           <Icon name="cog" size={50} color="#1C6758" />
@@ -61,7 +58,7 @@ const Settings = () => {
           <Icon name="chevron-right" size={width * 0.05} color="#4B4B4B" />
         </TouchableOpacity>
       </View>
-    </SafeAreaView>
+    </View>
   );
 };
 
@@ -71,7 +68,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#D9E9E6",
-    paddingHorizontal: width * 0.05,
+    padding: width * 0.03,
     paddingTop: height * 0.05,
   },
   headerContainer: {
@@ -94,13 +91,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: width * 0.05,
   },
   text: {
-    marginRight: width * 0.3,
     fontSize: 20,
   },
   separator: {
     height: 1,
     backgroundColor: "black",
-    marginVertical: height * 0.05, // 5% of the screen height margin vertically
+    marginVertical: height * 0.05,
   },
   moreText: {
     marginRight: width * 0.3,
