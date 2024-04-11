@@ -4,12 +4,10 @@ import {
   Text,
   Switch,
   StyleSheet,
-  SafeAreaView,
   Dimensions,
-  StatusBar,
   TouchableOpacity,
 } from "react-native";
-import Icon from "react-native-vector-icons/FontAwesome";
+import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
 const Settings = () => {
   const [isDarkMode, setIsDarkMode] = useState(false);
@@ -27,7 +25,6 @@ const Settings = () => {
 
   return (
     <View style={styles.container}>
-      <StatusBar />
       <View style={styles.container}>
         <View style={styles.headerContainer}>
           <Icon name="cog" size={50} color="#1C6758" />

@@ -3,15 +3,16 @@ import {
   View,
   Text,
   StyleSheet,
-  SafeAreaView,
   Dimensions,
-  StatusBar,
   TouchableOpacity,
   FlatList,
   Modal,
+  Alert
 } from "react-native";
-import Icon from "react-native-vector-icons/FontAwesome";
+import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { BlurView } from "expo-blur";
+import Swipeable from 'react-native-gesture-handler/Swipeable';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 const History = () => {
   const [history, setHistory] = useState([
@@ -80,10 +81,23 @@ const History = () => {
     setIsHistoryDetailsVisible(!isHistoryDetailsVisible);
   };
 
-  const renderStatusIcon = ({ item }) => {
+  const deleteRow = (item) =>{
+    console.log("Remove item: " + item.location);
+    Alert.alert('Success', 'Deleted successfully');
+  }
+
+  const renderHistoryRow = ({ item }) => {
     const status = item.status === "fixed" ? "green" : "red";
+    const rightSwipeActions = () => {
+      return (
+        <TouchableOpacity onPress={() => deleteRow(item)}>
+          <Icon name="delete" size={width * 0.07} style={styles.deleteButton}/>
+        </TouchableOpacity>
+        )};
 
     return (
+      <GestureHandlerRootView>
+      <Swipeable renderRightActions={rightSwipeActions}>
       <TouchableOpacity onPress={() => toggleDetailsVisible(item)}>
         <View style={styles.historyItem}>
           <View>
@@ -95,8 +109,10 @@ const History = () => {
           </View>
         </View>
       </TouchableOpacity>
+      </Swipeable>
+      </GestureHandlerRootView>
     );
-  };
+  }; 
 
   const closeHistoryDetails = () => {
     setIsHistoryDetailsVisible(false);
@@ -116,7 +132,7 @@ const History = () => {
         <View style={styles.list}>
           <FlatList
             data={history}
-            renderItem={renderStatusIcon}
+            renderItem={renderHistoryRow}
             keyExtractor={(item, index) => index.toString()}
           />
         </View>
@@ -216,6 +232,10 @@ const styles = StyleSheet.create({
   blurContainer: {
     flex: 1,
     overflow: "hidden",
+  },
+  deleteButton:{
+    backgroundColor:"red",
+    color: "white",
   },
 });
 
