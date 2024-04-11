@@ -5,9 +5,9 @@ import MapView, { Callout, MapCallout, Marker } from "react-native-maps";
 import { useState } from "react";
 
 
-//Dummy data for markers
-const markers = [
-  {
+const Map = () => {
+
+  const [markers, setMarkers] = useState([{
     index: 1,
     latitude: 43.4794,
     longitude: -80.5180,
@@ -35,20 +35,36 @@ const markers = [
     title: "Toyota - Waterloo Campus",
     description: "Toyota Dealership",
   },
-
-
-];
-
-
-const Map = () => {
+  ]);
 
   const [draggableMarkerCoord, setDraggableMarkerCoord] = useState({
     latitude: 43.48010068075527,
     longitude: -80.51533622811151
   });
 
-  const onPressHandler = () => {
+  const addMarker = () => {
+    const newMarker = {
+      index: markers.length + 1, 
+      latitude: draggableMarkerCoord.latitude,
+      longitude: draggableMarkerCoord.longitude,
+      title: "Pothole added with pin drop!",
+      description: "Pothole added with pin drop!",
+    };
+
+    setMarkers([...markers, newMarker]);
+    resetDraggableMarker();
+  };
+
+  const resetDraggableMarker = () => {
+    setDraggableMarkerCoord({
+      latitude: 43.48010068075527,
+      longitude: -80.51533622811151
+    });
+  }
+
+  const draggablePinOnPress = () => {
     console.log("Button pressed!");
+    addMarker();
   };
 
 
@@ -80,20 +96,17 @@ const Map = () => {
         ))}
         {/* Dummy draggable marker */}
         <Marker
-
           draggable
           pinColor="blue"
           coordinate={{
             latitude: 43.48010068075527,
             longitude: -80.51533622811151
           }}
-          onDragEnd={(e) => console.log(e.nativeEvent.coordinate)}>
+          onDragEnd={(e) => setDraggableMarkerCoord(e.nativeEvent.coordinate)}>
 
-          <Callout>
-            <Text>Press Button to add pothole.</Text>
-            <Button title="Add Pothole" onPress={onPressHandler} />
+          <Callout onPress={draggablePinOnPress}>
+            <Text>Click here to add pothole.</Text>
           </Callout>
-
 
         </Marker>
 
