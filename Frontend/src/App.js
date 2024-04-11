@@ -8,6 +8,7 @@ import Settings from "./screens/Settings";
 import Report from "./screens/Report";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { SafeAreaView } from "react-native-safe-area-context";
+import DataVisualizations from "./screens/DataVisualizations";
 
 const Tab = createBottomTabNavigator();
 
@@ -28,6 +29,8 @@ const App = () => {
                 iconName = "history";
               } else if (route.name === "Settings") {
                 iconName = "cog";
+              } else if (route.name === "Data Visualizations") {
+                iconName = "chart-areaspline";
               }
 
               return (
@@ -47,6 +50,10 @@ const App = () => {
           <Tab.Screen name="Report" component={Report} />
           <Tab.Screen name="History" component={History} />
           <Tab.Screen name="Settings" component={Settings} />
+          <Tab.Screen
+            name="Data Visualizations"
+            component={DataVisualizations}
+          />
         </Tab.Navigator>
       </NavigationContainer>
     </SafeAreaView>
