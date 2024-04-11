@@ -1,12 +1,15 @@
 import React from "react";
 import { Text, View } from "react-native";
 import styles from "../components/styles";
+import { useTheme } from '../components/themeContext';
+import ThemedText from "../components/themeText";
 import MapView, { Callout, Marker } from "react-native-maps";
-import { useState } from "react";
 
 
 const Map = () => {
-
+  const { theme, themes, toggleTheme } = useTheme(); 
+  const currentTheme = themes[theme];
+  
   const [markers, setMarkers] = useState([{
     index: 1,
     latitude: 43.4794,
@@ -105,7 +108,7 @@ const Map = () => {
           onDragEnd={(e) => setDraggableMarkerCoord(e.nativeEvent.coordinate)}>
 
           <Callout onPress={draggablePinOnPress}>
-            <Text>Click here to add pothole.</Text>
+            <ThemedText>Click here to add pothole.</ThemedText>
           </Callout>
 
         </Marker>

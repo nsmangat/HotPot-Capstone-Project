@@ -9,12 +9,23 @@ import Report from "./screens/Report";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { SafeAreaView } from "react-native-safe-area-context";
 import DataVisualizations from "./screens/DataVisualizations";
+import { ThemeProvider,useTheme } from "./components/themeContext";
 
 const Tab = createBottomTabNavigator();
 
 const App = () => {
   return (
-    <SafeAreaView style={styles.safeContainer}>
+    <ThemeProvider>
+      <AppContent />
+    </ThemeProvider>
+  );
+};
+
+const AppContent = () => {
+  const { theme, themes } = useTheme(); // Use the useTheme hook to get theme data
+  const currentTheme = themes[theme];
+  return (
+    <SafeAreaView style={[styles.safeContainer,{ backgroundColor: currentTheme.backgroundColor }]}>
       <NavigationContainer>
         <Tab.Navigator
           screenOptions={({ route }) => ({

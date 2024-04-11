@@ -11,6 +11,8 @@ import {
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import { useTheme } from '../components/themeContext';
+import ThemedText from "../components/themeText";
 
 const Report = () => {
   const [location, setLocation] = useState("");
@@ -18,6 +20,8 @@ const Report = () => {
   const [description, setDescription] = useState("");
   const [image, setImage] = useState(null);
   const [requiredFieldsFilled, setRequiredFieldsFilled] = useState(false);
+  const { theme, themes, toggleTheme } = useTheme(); 
+  const currentTheme = themes[theme];
 
   // For uploading image
   const pickImage = async () => {
@@ -68,14 +72,14 @@ const Report = () => {
   };
 
   return (
-    <View style={styles.pageView}>
+    <View style={[styles.pageView, ,{ backgroundColor: currentTheme.backgroundColor }]}>
       <ScreenTitle name="file-document" title="Report a Pothole" />
       <View style={styles.customTextInputComponent.textInputContainer}>
-        <Text>
+        <ThemedText>
           <Text style={styles.customTextInputComponent.asterisk}>*</Text>{" "}
           indicates required fields.
-        </Text>
-        <Text>Uploading an image is optional.</Text>
+        </ThemedText>
+        <ThemedText>Uploading an image is optional.</ThemedText>
       </View>
       <CustomTextInput
         placeholder="Location"
@@ -127,14 +131,14 @@ const Report = () => {
 const CustomTextInput = (props) => {
   return (
     <View style={styles.customTextInputComponent.textInputContainer}>
-      <Text style={styles.customTextInputComponent.label}>
+      <ThemedText style={styles.customTextInputComponent.label}>
         {props.required ? (
           <Text style={styles.customTextInputComponent.asterisk}>*</Text>
         ) : (
           ""
         )}
         {props.title}
-      </Text>
+      </ThemedText>
       <TextInput
         style={styles.customTextInputComponent.customTextInput}
         placeholder={props.placeholder}

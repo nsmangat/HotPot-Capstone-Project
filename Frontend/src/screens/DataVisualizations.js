@@ -8,10 +8,15 @@ import {
   ScrollView,
 } from "react-native";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import { useTheme } from '../components/themeContext';
+import ThemedText from "../components/themeText";
 
 const DataVisualizations = () => {
+  const { theme, themes, toggleTheme } = useTheme(); 
+  const currentTheme = themes[theme];
+
   return (
-    <View style={styles.pageView}>
+    <View style={[styles.pageView, ,{ backgroundColor: currentTheme.backgroundColor }]}>
       <ScreenTitle name="chart-areaspline" title="Data Visualizations" />
       <ScrollView horizontal={false} style={styles.scrollView}>
         <StaticImage

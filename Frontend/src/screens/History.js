@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import {
   View,
-  Text,
   StyleSheet,
   Dimensions,
   TouchableOpacity,
@@ -13,8 +12,13 @@ import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { BlurView } from "expo-blur";
 import Swipeable from "react-native-gesture-handler/Swipeable";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { useTheme } from '../components/themeContext';
+import ThemedText from "../components/themeText";
 
 const History = () => {
+  const { theme, themes } = useTheme();
+  const currentTheme = themes[theme];
+
   const [history, setHistory] = useState([
     {
       location: "40 King St S, Waterloo, ON N2J 2W8",
@@ -105,8 +109,8 @@ const History = () => {
                 <Icon name="circle" size={width * 0.054} color={status} />
               </View>
               <View style={styles.historyCol}>
-                <Text style={styles.text}>{item.location}</Text>
-                <Text style={styles.text}>{item.dateTime}</Text>
+                <ThemedText style={styles.text}>{item.location}</ThemedText>
+                <ThemedText style={styles.text}>{item.dateTime}</ThemedText>
               </View>
             </View>
           </TouchableOpacity>
@@ -120,15 +124,15 @@ const History = () => {
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.container}>
+    //<View style={styles.container}>
+      <View style={[styles.container, { backgroundColor: currentTheme.backgroundColor }]}>
         <View style={styles.headerContainer}>
           <Icon name="history" size={50} color="#1C6758" />
-          <Text style={styles.header}>Reports History</Text>
+          <ThemedText style={styles.header}>Reports History</ThemedText>
         </View>
         <View style={styles.itemContainer}>
-          <Text style={styles.title}>Location</Text>
-          <Text style={styles.title}>Time Reported</Text>
+          <ThemedText style={styles.title}>Location</ThemedText>
+          <ThemedText style={styles.title}>Time Reported</ThemedText>
         </View>
         <View style={styles.list}>
           <FlatList
@@ -144,15 +148,15 @@ const History = () => {
         >
           <BlurView intensity={20} style={styles.blurContainer}>
             <View style={styles.modalContainer}>
-              <Text style={styles.title}>Report Details</Text>
-              <Text style={styles.text}>
+              <ThemedText style={styles.title}>Report Details</ThemedText>
+              <ThemedText style={styles.text}>
                 Location: {selectedItem?.location}
-              </Text>
-              <Text style={styles.text}>
+              </ThemedText>
+              <ThemedText style={styles.text}>
                 Date Time: {selectedItem?.dateTime}
-              </Text>
-              <Text style={styles.text}>Description: This is description</Text>
-              <Text style={styles.text}>Size: Small</Text>
+              </ThemedText>
+              <ThemedText style={styles.text}>Description: This is description</ThemedText>
+              <ThemedText style={styles.text}>Size: Small</ThemedText>
               <TouchableOpacity
                 onPress={closeHistoryDetails}
                 style={styles.closeButton}
@@ -163,7 +167,7 @@ const History = () => {
           </BlurView>
         </Modal>
       </View>
-    </View>
+    //</View>
   );
 };
 
@@ -174,8 +178,8 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#D9E9E6",
     padding: width * 0.03,
-    paddingTop: height * 0.05,
-    paddingBottom: height * 0.06,
+    paddingTop: height * 0.1,
+    paddingBottom: height * 0.12,
   },
   headerContainer: {
     flexDirection: "row",
