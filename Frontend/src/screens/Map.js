@@ -1,10 +1,9 @@
-import React from "react";
+import React ,{ useState }from "react";
 import { Text, View } from "react-native";
 import styles from "../components/styles";
 import { useTheme } from '../components/themeContext';
 import ThemedText from "../components/themeText";
 import MapView, { Callout, Marker } from "react-native-maps";
-
 
 const Map = () => {
   const { theme, themes, toggleTheme } = useTheme(); 

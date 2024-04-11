@@ -13,13 +13,13 @@ const styles = StyleSheet.create({
     color: "#1C6758",
     fontSize: width * 0.1,
     fontWeight: "bold",
-    marginLeft: width * 0.05,
+    marginLeft: width * 0.01,
   },
   titleContainer: {
     flexDirection: "row",
     alignItems: "center",
     marginBottom: height * 0.05,
-    paddingHorizontal: width * 0.01,
+    paddingHorizontal: width * 0.03,
   },
 });
 

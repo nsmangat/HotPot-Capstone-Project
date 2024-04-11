@@ -28,7 +28,7 @@ const Settings = () => {
         { backgroundColor: currentTheme.backgroundColor },
       ]}
     >
-      <ScreenTitle name="cog" title="Setting" />
+      <ScreenTitle name="cog" title="Settings" />
       <View style={styles.itemContainer}>
         <ThemedText style={styles.text}>Push Notification</ThemedText>
         <Switch
