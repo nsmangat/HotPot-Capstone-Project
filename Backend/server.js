@@ -1,40 +1,37 @@
 require("dotenv").config();
+const User = require("./models/user");
 
 const express = require("express");
-const mongoose = require('mongoose');
 const cors = require("cors");
-const Pothole = require("./models/pothole");
+const { Pool } = require("pg");
 
 const app = express();
 const port = 3000;
-const host = process.env.IP_ADDRESS || "localhost";
+// const host = process.env.IP_ADDRESS || "localhost";
 
 app.use(cors());
 
-// Connect to MongoDB
-mongoose.connect(process.env.DB_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true
-})
-  .then(() => {
-    console.log('Connected to MongoDB');
-  })
-  .catch((err) => {
-    console.error('Error connecting to MongoDB:', err);
-  });
+// Create a PostgreSQL connection pool
+const pool = new Pool({
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
+  port: process.env.DB_PORT,
+});
 
-app.get("/", async (req, res) => {
+// Get all users from DB
+app.get("/users", async (req, res) => {
   try {
-    console.log("Responding to request");
-    const potholeData = await Pothole.find();
-    res.json(potholeData);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Server Error' });
+    const users = await User.findAll();
+    console.log(users);
+    res.json(users);
+  } catch (err) {
+    console.error("Error fetching users:", err);
+    res.status(500).send("Internal Server Error");
   }
 });
 
 app.listen(port, () => {
-  console.log(host);
-  console.log(`Server is running at http://${host}:${port}/`);
+  console.log(`Server is running at http://${process.env.DB_HOST}:${port}/`);
 });
