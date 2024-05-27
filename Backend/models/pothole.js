@@ -48,17 +48,4 @@ const Pothole = sequelize.define(
   }
 );
 
-// Create the table if it doesn't exist
-// (async () => {
-//   try {
-//     await Pothole.sync({ force: false }); // Set force to true to drop existing table and recreate it
-//     console.log("Potholes table synced successfully.");
-//   } catch (error) {
-//     console.error("Error syncing potholes table:", error);
-//   } finally {
-//     // Close the database connection
-//     await sequelize.close();
-//   }
-// })();
-
 module.exports = Pothole;

@@ -1,3 +1,5 @@
+// For ORM portion
+
 const { Sequelize } = require("sequelize");
 require("dotenv").config();
 
