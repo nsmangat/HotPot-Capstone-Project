@@ -1,4 +1,4 @@
-import { StyleSheet } from "react-native";
+import { StatusBar, StyleSheet } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 // import { Map, Report, History, Settings } from "./screens";
@@ -10,14 +10,35 @@ import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { SafeAreaView } from "react-native-safe-area-context";
 import DataVisualizations from "./screens/DataVisualizations";
 import { ThemeProvider,useTheme } from "./components/themeContext";
+import { createStackNavigator } from '@react-navigation/stack';
+import Login from "./screens/Login"
 
+const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
+
+function UserLogInScreen() {
+  return(
+    <>
+    <StatusBar/>
+    <SafeAreaView >
+        <Login/>
+    </SafeAreaView>
+    </>
+  )
+}
+
 
 const App = () => {
   return (
-    <ThemeProvider>
-      <AppContent />
-    </ThemeProvider>
+    // <ThemeProvider>
+    //   <AppContent />
+    // </ThemeProvider>
+    <NavigationContainer>
+    <Stack.Navigator initialRouteName="Login">
+        <Stack.Screen name="Login" component={UserLogInScreen}/>
+        <Stack.Screen name="Home" component={Report} />
+    </Stack.Navigator>
+    </NavigationContainer>
   );
 };
 
