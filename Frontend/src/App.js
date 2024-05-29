@@ -22,12 +22,12 @@ const AppContent = () => {
   const currentTheme = themes[theme];
 
   return (
-    <SafeAreaView
-      style={[
-        styles.safeContainer,
-        { backgroundColor: currentTheme.backgroundColor },
-      ]}
-    >
+    // <SafeAreaView
+    //   style={[
+    //     styles.safeContainer,
+    //     { backgroundColor: currentTheme.backgroundColor },
+    //   ]}
+    // >
       <Tab.Navigator
         screenOptions={({ route }) => ({
           tabBarIcon: ({ color, size }) => {
@@ -73,7 +73,7 @@ const AppContent = () => {
         <Tab.Screen name="Data Visualizations" component={DataVisualizations} />
         <Tab.Screen name="Settings" component={Settings} />
       </Tab.Navigator>
-    </SafeAreaView>
+    // </SafeAreaView>
   );
 };
 
