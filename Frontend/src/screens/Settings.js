@@ -10,6 +10,7 @@ import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { useTheme } from "../components/themeContext";
 import ThemedText from "../components/themeText";
 import ScreenTitle from "../components/header";
+import { useNavigation } from "@react-navigation/native";
 
 const Settings = () => {
   const [isPushNotification, setPushNotification] = useState(true);
@@ -20,6 +21,24 @@ const Settings = () => {
 
   const { theme, themes, toggleTheme } = useTheme();
   const currentTheme = themes[theme];
+  const navigation = useNavigation();
+
+  const onAboutUsPressed = () => {
+    console.info("About Us");
+  };
+
+  const onPrivacyPolicyPressed = () => {
+    console.info("Privacy Policy");
+  };
+
+  const onTermsAndConditionsPressed = () => {
+    console.info("Terms and Conditions");
+  };
+
+  const onLogoutPressed = () => {
+    console.info("Logout");
+    navigation.navigate("Login")
+  };
 
   return (
     <View
@@ -44,17 +63,21 @@ const Settings = () => {
       <View style={styles.itemContainer}>
         <ThemedText style={styles.moreText}>More</ThemedText>
       </View>
-      <TouchableOpacity style={styles.itemContainer}>
+      <TouchableOpacity style={styles.itemContainer} onPress={onAboutUsPressed}>
         <ThemedText style={styles.text}>About Us</ThemedText>
-        <Icon name="chevron-right" size={width * 0.05} color="#4B4B4B" />
+        <Icon name="chevron-right" size={width * 0.05} color="#999" />
       </TouchableOpacity>
-      <TouchableOpacity style={styles.itemContainer}>
+      <TouchableOpacity style={styles.itemContainer} onPress={onPrivacyPolicyPressed}>
         <ThemedText style={styles.text}>Privacy Policy</ThemedText>
-        <Icon name="chevron-right" size={width * 0.05} color="#4B4B4B" />
+        <Icon name="chevron-right" size={width * 0.05} color="#999" />
       </TouchableOpacity>
-      <TouchableOpacity style={styles.itemContainer}>
-        <ThemedText style={styles.text}>Terms and conditions</ThemedText>
-        <Icon name="chevron-right" size={width * 0.05} color="#4B4B4B" />
+      <TouchableOpacity style={styles.itemContainer} onPress={onTermsAndConditionsPressed}>
+        <ThemedText style={styles.text}>Terms and Conditions</ThemedText>
+        <Icon name="chevron-right" size={width * 0.05} color="#999" />
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.itemContainer} onPress={onLogoutPressed}>
+        <ThemedText style={styles.text}>Log out</ThemedText>
+        <Icon name="logout" size={width * 0.05} color="#999" />
       </TouchableOpacity>
     </View>
   );
