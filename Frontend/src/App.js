@@ -9,24 +9,24 @@ import Report from "./screens/Report";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { SafeAreaView } from "react-native-safe-area-context";
 import DataVisualizations from "./screens/DataVisualizations";
-import { ThemeProvider,useTheme } from "./components/themeContext";
-import { createStackNavigator } from '@react-navigation/stack';
-import Login from "./screens/Login"
+import { ThemeProvider, useTheme } from "./components/themeContext";
+import { createStackNavigator } from "@react-navigation/stack";
+import Login from "./screens/Login";
+import SignUp from "./screens/SignUp";
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
 function UserLogInScreen() {
-  return(
+  return (
     <>
-    <StatusBar/>
-    <SafeAreaView >
-        <Login/>
-    </SafeAreaView>
+      <StatusBar />
+      <SafeAreaView>
+        <SignUp />
+      </SafeAreaView>
     </>
-  )
+  );
 }
-
 
 const App = () => {
   return (
@@ -34,10 +34,10 @@ const App = () => {
     //   <AppContent />
     // </ThemeProvider>
     <NavigationContainer>
-    <Stack.Navigator initialRouteName="Login">
-        <Stack.Screen name="Login" component={UserLogInScreen}/>
+      <Stack.Navigator initialRouteName="Login">
+        <Stack.Screen name="SignIn" component={UserLogInScreen} />
         <Stack.Screen name="Home" component={Report} />
-    </Stack.Navigator>
+      </Stack.Navigator>
     </NavigationContainer>
   );
 };
@@ -46,7 +46,12 @@ const AppContent = () => {
   const { theme, themes } = useTheme(); // Use the useTheme hook to get theme data
   const currentTheme = themes[theme];
   return (
-    <SafeAreaView style={[styles.safeContainer,{ backgroundColor: currentTheme.backgroundColor }]}>
+    <SafeAreaView
+      style={[
+        styles.safeContainer,
+        { backgroundColor: currentTheme.backgroundColor },
+      ]}
+    >
       <NavigationContainer>
         <Tab.Navigator
           screenOptions={({ route }) => ({

@@ -1,18 +1,15 @@
 import React, { useState } from "react";
 import {
   View,
-  Switch,
   StyleSheet,
   Dimensions,
   TouchableOpacity,
   Text,
 } from "react-native";
-import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import ScreenTitle from "../components/header";
-import { TextInput } from "react-native-gesture-handler";
 import CustomInput from "../components/customInput";
 import CustomButton from "../components/customButton";
-import Checkbox from 'expo-checkbox';
+import Checkbox from "expo-checkbox";
 
 const Login = () => {
   const [rememberMe, setRememberMe] = useState(false);
@@ -96,17 +93,11 @@ const styles = StyleSheet.create({
     marginBottom: height * 0.04,
     paddingHorizontal: width * 0.05,
   },
-  formInput: {
-    fontSize: 20,
-  },
-  buttonLabel: {
-    fontSize: 20,
-  },
   rememberMeContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    width: '80%',  // Adjust the width to match your design
+    width: "80%", // Adjust the width to match your design
     marginBottom: height * 0.04,
   },
   rememberMe: {
