@@ -10,14 +10,18 @@ import ScreenTitle from "../components/header";
 import CustomInput from "../components/customInput";
 import CustomButton from "../components/customButton";
 import Checkbox from "expo-checkbox";
+import { useNavigation } from "@react-navigation/core";
 
 const Login = () => {
   const [rememberMe, setRememberMe] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  const navigation = useNavigation();
+
   const onLogInPressed = () => {
     console.info("Log in");
+    navigation.navigate("Home");
   };
 
   const onForgotPasswordPressed = () => {
@@ -30,6 +34,7 @@ const Login = () => {
 
   const onSignUpPressed = () => {
     console.info("Sign up");
+    navigation.navigate("SignUp");
   };
 
   return (
@@ -84,7 +89,7 @@ const { width, height } = Dimensions.get("window");
 const styles = StyleSheet.create({
   container: {
     alignItems: "center",
-    paddingTop: 70,
+    marginTop: height*0.11,
   },
   itemContainer: {
     flexDirection: "row",
@@ -97,7 +102,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    width: "80%", // Adjust the width to match your design
+    width: "80%", 
     marginBottom: height * 0.04,
   },
   rememberMe: {
