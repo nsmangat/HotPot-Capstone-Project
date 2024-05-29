@@ -12,39 +12,15 @@ import DataVisualizations from "./screens/DataVisualizations";
 import { ThemeProvider, useTheme } from "./components/themeContext";
 import { createStackNavigator } from "@react-navigation/stack";
 import Login from "./screens/Login";
-import SignUp from "./screens/SignUp";
+import SignUp from "./screens/SignUp"
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
-function UserLogInScreen() {
-  return (
-    <>
-      <StatusBar />
-      <SafeAreaView>
-        <SignUp />
-      </SafeAreaView>
-    </>
-  );
-}
-
-const App = () => {
-  return (
-    // <ThemeProvider>
-    //   <AppContent />
-    // </ThemeProvider>
-    <NavigationContainer>
-      <Stack.Navigator initialRouteName="Login">
-        <Stack.Screen name="SignIn" component={UserLogInScreen} />
-        <Stack.Screen name="Home" component={Report} />
-      </Stack.Navigator>
-    </NavigationContainer>
-  );
-};
-
 const AppContent = () => {
   const { theme, themes } = useTheme(); // Use the useTheme hook to get theme data
   const currentTheme = themes[theme];
+
   return (
     <SafeAreaView
       style={[
@@ -52,48 +28,66 @@ const AppContent = () => {
         { backgroundColor: currentTheme.backgroundColor },
       ]}
     >
-      <NavigationContainer>
-        <Tab.Navigator
-          screenOptions={({ route }) => ({
-            tabBarIcon: ({ color, size }) => {
-              let iconName;
+      <Tab.Navigator
+        screenOptions={({ route }) => ({
+          tabBarIcon: ({ color, size }) => {
+            let iconName;
 
-              if (route.name === "Map") {
+            switch (route.name) {
+              case "Map":
                 iconName = "map-marker";
-              } else if (route.name === "Report") {
+                break;
+              case "Report":
                 iconName = "file-document";
-              } else if (route.name === "History") {
+                break;
+              case "History":
                 iconName = "history";
-              } else if (route.name === "Settings") {
+                break;
+              case "Settings":
                 iconName = "cog";
-              } else if (route.name === "Data Visualizations") {
+                break;
+              case "Data Visualizations":
                 iconName = "chart-areaspline";
-              }
+                break;
+              default:
+                iconName = "circle";
+                break;
+            }
 
-              return (
-                <MaterialCommunityIcons
-                  name={iconName}
-                  size={size}
-                  color={color}
-                />
-              );
-            },
-            tabBarActiveTintColor: "green",
-            tabBarInactiveTintColor: "black",
-            headerShown: false,
-          })}
-        >
-          <Tab.Screen name="Map" component={Map} />
-          <Tab.Screen name="Report" component={Report} />
-          <Tab.Screen name="History" component={History} />
-          <Tab.Screen name="Settings" component={Settings} />
-          <Tab.Screen
-            name="Data Visualizations"
-            component={DataVisualizations}
-          />
-        </Tab.Navigator>
-      </NavigationContainer>
+            return (
+              <MaterialCommunityIcons
+                name={iconName}
+                size={size}
+                color={color}
+              />
+            );
+          },
+          tabBarActiveTintColor: "green",
+          tabBarInactiveTintColor: "black",
+          headerShown: false,
+        })}
+      >
+        <Tab.Screen name="Map" component={Map} />
+        <Tab.Screen name="Report" component={Report} />
+        <Tab.Screen name="History" component={History} />
+        <Tab.Screen name="Data Visualizations" component={DataVisualizations} />
+        <Tab.Screen name="Settings" component={Settings} />
+      </Tab.Navigator>
     </SafeAreaView>
+  );
+};
+
+const App = () => {
+  return (
+    <ThemeProvider>
+      <NavigationContainer>
+        <Stack.Navigator screenOptions={{ headerShown: false }}>
+          <Stack.Screen name="Login" component={Login} />
+          <Stack.Screen name="SignUp" component={SignUp} />
+          <Stack.Screen name="Home" component={AppContent} /> 
+        </Stack.Navigator>
+      </NavigationContainer>
+    </ThemeProvider>
   );
 };
 

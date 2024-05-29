@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { View, StyleSheet, Dimensions, Text } from "react-native";
 import CustomInput from "../components/customInput";
 import CustomButton from "../components/customButton";
+import { useNavigation } from "@react-navigation/core";
 
 const SignUp = () => {
   const [username, setUsername] = useState("");
@@ -9,16 +10,19 @@ const SignUp = () => {
   const [phoneNum, setPhoneNum] = useState("");
   const [password, setPassword] = useState("");
 
+  const nagivation = useNavigation();
+
   const onRegisterPressed = () => {
     console.info("Register");
   };
 
   const onSignInGooglePressed = () => {
-    console.info("Sign in with Google");
+    console.info("Sign In with Google");
   };
 
   const onSignInPressed = () => {
-    console.info("Sign in");
+    console.info("Sign In");
+    nagivation.navigate("Login");
   };
 
   const onTermsOfUsePressed = () => {
@@ -77,7 +81,7 @@ const SignUp = () => {
         fgColor="#DD4D44"
       ></CustomButton>
       <CustomButton
-        text="Have an account? Sign In"
+        text="Have an account? Sign in"
         onPress={onSignInPressed}
         type="TERTIARY"
       ></CustomButton>
@@ -90,14 +94,17 @@ const { width, height } = Dimensions.get("window");
 const styles = StyleSheet.create({
   container: {
     alignItems: "center",
+    marginTop: height*0.11,
   },
   title: {
-    fontSize: 20,
+    fontSize: 25,
     fontWeight: "bold",
     color: "#1C6758",
-    margin: 10,
+    paddingBottom: height*0.02,
   },
   separator: {
+    height: 1,
+    backgroundColor: "black",
     marginVertical: height * 0.05,
   },
   text: {
