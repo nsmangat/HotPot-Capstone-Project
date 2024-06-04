@@ -5,23 +5,31 @@ import {
   Dimensions,
   TouchableOpacity,
   Text,
+  Alert,
 } from "react-native";
 import ScreenTitle from "../components/header";
 import CustomInput from "../components/customInput";
 import CustomButton from "../components/customButton";
 import Checkbox from "expo-checkbox";
-import { useNavigation } from "@react-navigation/core";
+import { auth } from "../../firebase/firebase";
+import { signInWithEmailAndPassword } from "firebase/auth";
 
-const Login = () => {
+const Login = ({ navigation }) => {
   const [rememberMe, setRememberMe] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const navigation = useNavigation();
-
-  const onLogInPressed = () => {
+  const onLogInPressed = async () => {
     console.info("Log in");
-    navigation.navigate("Home");
+    signInWithEmailAndPassword(auth, email, password)
+      .then(() => {
+        navigation.navigate("Home");
+      })
+      .catch(function (error) {
+        Alert.alert("Incorrect input!", "Please re-enter your login input", [
+          { text: "OK", onPress: () => console.log("OK Pressed") },
+        ]);
+      });
   };
 
   const onForgotPasswordPressed = () => {
@@ -89,7 +97,7 @@ const { width, height } = Dimensions.get("window");
 const styles = StyleSheet.create({
   container: {
     alignItems: "center",
-    marginTop: height*0.11,
+    marginTop: height * 0.11,
   },
   itemContainer: {
     flexDirection: "row",
@@ -102,7 +110,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    width: "80%", 
+    width: "80%",
     marginBottom: height * 0.04,
   },
   rememberMe: {

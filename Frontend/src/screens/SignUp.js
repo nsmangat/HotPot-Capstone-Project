@@ -1,19 +1,28 @@
 import React, { useState } from "react";
-import { View, StyleSheet, Dimensions, Text } from "react-native";
+import { View, StyleSheet, Dimensions, Text, Alert } from "react-native";
 import CustomInput from "../components/customInput";
 import CustomButton from "../components/customButton";
-import { useNavigation } from "@react-navigation/core";
+import { auth } from "../../firebase/firebase";
+import { createUserWithEmailAndPassword } from "firebase/auth";
 
-const SignUp = () => {
+const SignUp = ({ navigation }) => {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [phoneNum, setPhoneNum] = useState("");
   const [password, setPassword] = useState("");
 
-  const nagivation = useNavigation();
-
-  const onRegisterPressed = () => {
+  const onRegisterPressed = async () => {
     console.info("Register");
+    createUserWithEmailAndPassword(auth, email, password)
+      .then(() => {
+        navigation.navigate("Home");
+      })
+      .catch(function (error) {
+        console.log(error);
+        Alert.alert("Invalid input!", error.message, [
+          { text: "OK", onPress: () => console.log("OK Pressed") },
+        ]);
+      });
   };
 
   const onSignInGooglePressed = () => {
@@ -22,7 +31,7 @@ const SignUp = () => {
 
   const onSignInPressed = () => {
     console.info("Sign In");
-    nagivation.navigate("Login");
+    navigation.navigate("Login");
   };
 
   const onTermsOfUsePressed = () => {
@@ -94,13 +103,13 @@ const { width, height } = Dimensions.get("window");
 const styles = StyleSheet.create({
   container: {
     alignItems: "center",
-    marginTop: height*0.11,
+    marginTop: height * 0.11,
   },
   title: {
     fontSize: 25,
     fontWeight: "bold",
     color: "#1C6758",
-    paddingBottom: height*0.02,
+    paddingBottom: height * 0.02,
   },
   separator: {
     height: 1,

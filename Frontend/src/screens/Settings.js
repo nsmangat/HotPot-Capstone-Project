@@ -10,9 +10,10 @@ import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { useTheme } from "../components/themeContext";
 import ThemedText from "../components/themeText";
 import ScreenTitle from "../components/header";
-import { useNavigation } from "@react-navigation/native";
+import { auth } from "../../firebase/firebase";
+import { signOut } from "firebase/auth";
 
-const Settings = () => {
+const Settings = ({ navigation }) => {
   const [isPushNotification, setPushNotification] = useState(true);
   const togglePushNotification = () => {
     setPushNotification(!isPushNotification);
@@ -21,7 +22,6 @@ const Settings = () => {
 
   const { theme, themes, toggleTheme } = useTheme();
   const currentTheme = themes[theme];
-  const navigation = useNavigation();
 
   const onAboutUsPressed = () => {
     console.info("About Us");
@@ -35,9 +35,15 @@ const Settings = () => {
     console.info("Terms and Conditions");
   };
 
-  const onLogoutPressed = () => {
+  const onLogoutPressed = async () => {
     console.info("Logout");
-    navigation.navigate("Login")
+    signOut(auth)
+      .then(() => {
+        navigation.navigate("Login");
+      })
+      .catch((error) => {
+        console.error(error);
+      });
   };
 
   return (
@@ -67,11 +73,17 @@ const Settings = () => {
         <ThemedText style={styles.text}>About Us</ThemedText>
         <Icon name="chevron-right" size={width * 0.05} color="#999" />
       </TouchableOpacity>
-      <TouchableOpacity style={styles.itemContainer} onPress={onPrivacyPolicyPressed}>
+      <TouchableOpacity
+        style={styles.itemContainer}
+        onPress={onPrivacyPolicyPressed}
+      >
         <ThemedText style={styles.text}>Privacy Policy</ThemedText>
         <Icon name="chevron-right" size={width * 0.05} color="#999" />
       </TouchableOpacity>
-      <TouchableOpacity style={styles.itemContainer} onPress={onTermsAndConditionsPressed}>
+      <TouchableOpacity
+        style={styles.itemContainer}
+        onPress={onTermsAndConditionsPressed}
+      >
         <ThemedText style={styles.text}>Terms and Conditions</ThemedText>
         <Icon name="chevron-right" size={width * 0.05} color="#999" />
       </TouchableOpacity>
