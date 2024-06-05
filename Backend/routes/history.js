@@ -1,12 +1,11 @@
 const express = require('express');
 const router = express.Router();
-const Report = require("../models/report");
+const Pothole = require("../models/pothole");
 const { where } = require('sequelize');
-const CURRENT_USER = "a"
 
 router.get('/', async(req, res) =>{
     try{
-        const history = await Report.findAll(where={user_id:CURRENT_USER})
+        const history = await Pothole.findAll()
         //TODO: get pothole details from pothole table
         console.log(history);
       res.json(history);
