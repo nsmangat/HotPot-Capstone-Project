@@ -8,6 +8,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import time
 
+
 def submitForm(location, description, size):
     try:
         #Driver for debugging
@@ -15,8 +16,16 @@ def submitForm(location, description, size):
         # options.add_experimental_option("detach", True)
         # driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
 
-        #Main Driver
-        driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
+        #Main Driver(Chrome Window)
+        #driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
+
+        #Headless Driver
+        options = Options()
+        options.add_argument("--headless")
+        options.add_argument('log-level=2')
+        options.add_argument("--window-size=1920,1080")
+
+        driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
 
         #URL to City of Kitchener Report a Problem
         url = "https://form.kitchener.ca/CSD/CCS/Report-a-problem"
@@ -76,17 +85,32 @@ def submitForm(location, description, size):
         pageTwoContinueButton = driver.find_element(By.XPATH, pageTwoContinueButtonXpath)
         pageTwoContinueButton.click()
 
+        #Check the page
+        WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.XPATH, '//*[@id="C_300444a0-4c4d-4368-a454-cff3e48d1344_0"]/div/div/h2'))
+        )
+
+        #Check Title on final Page to confirm submission
+        finalPageTitle = driver.find_element(By.XPATH, '//*[@id="C_300444a0-4c4d-4368-a454-cff3e48d1344_0"]/div/div/h2')
+        title = finalPageTitle.text
+        print(title)
+
         time.sleep(5)
-        return True
+        driver.quit()
+
+        if title != "Contact information (optional)":
+            return False
+        else:
+            return True
     
     except Exception as e:
         # print("Error submitting form")
-        # print(e)
+        print(e)
         return False
 
 
-# check = submitForm("1234 Test Street", "Middle Lane", "Large")
-# if check:
-#     print("Form Submitted")
-# else:
-#     print("Error submitting form")
+check = submitForm("1234 Test Street", "Middle Lane", "Large")
+if check:
+    print("Form Submitted")
+else:
+    print("Error submitting form")
