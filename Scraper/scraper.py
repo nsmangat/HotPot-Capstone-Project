@@ -38,7 +38,7 @@ def submitForm(location, description, size):
             EC.presence_of_element_located((By.NAME, "Q_f301a496-1419-4950-8605-ad11013358d7_0"))
         )
 
-        # #Accepting the cookies
+        #Accepting the cookies
         try:
             cookie_banner = driver.find_element(By.CLASS_NAME, "cc-compliance")
             cookie_banner.click()
@@ -109,8 +109,8 @@ def submitForm(location, description, size):
         return False
 
 
-check = submitForm("1234 Test Street", "Middle Lane", "Large")
-if check:
-    print("Form Submitted")
-else:
-    print("Error submitting form")
+# check = submitForm("1234 Test Street", "Middle Lane", "Large")
+# if check:
+#     print("Form Submitted")
+# else:
+#     print("Error submitting form")
