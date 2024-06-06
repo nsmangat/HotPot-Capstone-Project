@@ -10,8 +10,11 @@ import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { useTheme } from "../components/themeContext";
 import ThemedText from "../components/themeText";
 import ScreenTitle from "../components/header";
+import { auth } from "../../firebase/firebase";
+import { signOut } from "firebase/auth";
+import { removeData } from "../utils/storage";
 
-const Settings = () => {
+const Settings = ({ navigation }) => {
   const [isPushNotification, setPushNotification] = useState(true);
   const togglePushNotification = () => {
     setPushNotification(!isPushNotification);
@@ -20,6 +23,32 @@ const Settings = () => {
 
   const { theme, themes, toggleTheme } = useTheme();
   const currentTheme = themes[theme];
+
+  const onAboutUsPressed = () => {
+    console.info("About Us");
+  };
+
+  const onPrivacyPolicyPressed = () => {
+    console.info("Privacy Policy");
+  };
+
+  const onTermsAndConditionsPressed = () => {
+    console.info("Terms and Conditions");
+  };
+
+  const onLogoutPressed = async () => {
+    console.info("Logout");
+    try {
+      await signOut(auth);
+      await removeData("user");
+      navigation.navigate("Login");
+    } catch (error) {
+      console.error(error);
+      Alert.alert("Logout failed", error.message, [
+        { text: "OK", onPress: () => console.log("OK Pressed") },
+      ]);
+    }
+  };
 
   return (
     <View
@@ -44,17 +73,27 @@ const Settings = () => {
       <View style={styles.itemContainer}>
         <ThemedText style={styles.moreText}>More</ThemedText>
       </View>
-      <TouchableOpacity style={styles.itemContainer}>
+      <TouchableOpacity style={styles.itemContainer} onPress={onAboutUsPressed}>
         <ThemedText style={styles.text}>About Us</ThemedText>
-        <Icon name="chevron-right" size={width * 0.05} color="#4B4B4B" />
+        <Icon name="chevron-right" size={width * 0.05} color="#999" />
       </TouchableOpacity>
-      <TouchableOpacity style={styles.itemContainer}>
+      <TouchableOpacity
+        style={styles.itemContainer}
+        onPress={onPrivacyPolicyPressed}
+      >
         <ThemedText style={styles.text}>Privacy Policy</ThemedText>
-        <Icon name="chevron-right" size={width * 0.05} color="#4B4B4B" />
+        <Icon name="chevron-right" size={width * 0.05} color="#999" />
       </TouchableOpacity>
-      <TouchableOpacity style={styles.itemContainer}>
-        <ThemedText style={styles.text}>Terms and conditions</ThemedText>
-        <Icon name="chevron-right" size={width * 0.05} color="#4B4B4B" />
+      <TouchableOpacity
+        style={styles.itemContainer}
+        onPress={onTermsAndConditionsPressed}
+      >
+        <ThemedText style={styles.text}>Terms and Conditions</ThemedText>
+        <Icon name="chevron-right" size={width * 0.05} color="#999" />
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.itemContainer} onPress={onLogoutPressed}>
+        <ThemedText style={styles.text}>Log out</ThemedText>
+        <Icon name="logout" size={width * 0.05} color="#999" />
       </TouchableOpacity>
     </View>
   );

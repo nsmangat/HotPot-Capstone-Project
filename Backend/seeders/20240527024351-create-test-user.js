@@ -20,6 +20,7 @@ module.exports = {
           phone_number: "123-456-789",
           first_name: "first",
           last_name: "last",
+          password: "abcd",
           created_at: new Date(),
           updated_at: new Date(),
         },

@@ -1,15 +1,18 @@
 require("dotenv").config();
 const User = require("./models/user");
-
 const express = require("express");
 const cors = require("cors");
 const { Pool } = require("pg");
+const verifyToken = require('./firebase/authMiddleware');
 
 const app = express();
 const port = 3000;
 // const host = process.env.IP_ADDRESS || "localhost";
 
 app.use(cors());
+
+//Import routes
+const historyRoute = require('./routes/history');
 
 // Create a PostgreSQL connection pool
 const pool = new Pool({
@@ -19,6 +22,8 @@ const pool = new Pool({
   database: process.env.DB_NAME,
   port: process.env.DB_PORT,
 });
+
+app.use(verifyToken);
 
 // Get all users from DB
 app.get("/users", async (req, res) => {
@@ -32,6 +37,9 @@ app.get("/users", async (req, res) => {
   }
 });
 
+//User routes
+app.use('/history',historyRoute);
+
 app.listen(port, () => {
-  console.log(`Server is running at http://${process.env.DB_HOST}:${port}/`);
+  console.log(`Server is running at http://${process.env.IP_ADDRESS}:${port}/`);
 });
