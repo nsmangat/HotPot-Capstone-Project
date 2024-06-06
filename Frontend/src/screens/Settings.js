@@ -12,6 +12,7 @@ import ThemedText from "../components/themeText";
 import ScreenTitle from "../components/header";
 import { auth } from "../../firebase/firebase";
 import { signOut } from "firebase/auth";
+import { removeData } from "../utils/storage";
 
 const Settings = ({ navigation }) => {
   const [isPushNotification, setPushNotification] = useState(true);
@@ -37,13 +38,16 @@ const Settings = ({ navigation }) => {
 
   const onLogoutPressed = async () => {
     console.info("Logout");
-    signOut(auth)
-      .then(() => {
-        navigation.navigate("Login");
-      })
-      .catch((error) => {
-        console.error(error);
-      });
+    try {
+      await signOut(auth);
+      await removeData("user");
+      navigation.navigate("Login");
+    } catch (error) {
+      console.error(error);
+      Alert.alert("Logout failed", error.message, [
+        { text: "OK", onPress: () => console.log("OK Pressed") },
+      ]);
+    }
   };
 
   return (

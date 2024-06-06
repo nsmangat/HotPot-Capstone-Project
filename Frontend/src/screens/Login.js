@@ -13,6 +13,7 @@ import CustomButton from "../components/customButton";
 import Checkbox from "expo-checkbox";
 import { auth } from "../../firebase/firebase";
 import { signInWithEmailAndPassword } from "firebase/auth";
+import { storeData, removeData } from "../utils/storage";
 
 const Login = ({ navigation }) => {
   const [rememberMe, setRememberMe] = useState(false);
@@ -21,15 +22,24 @@ const Login = ({ navigation }) => {
 
   const onLogInPressed = async () => {
     console.info("Log in");
-    signInWithEmailAndPassword(auth, email, password)
-      .then(() => {
-        navigation.navigate("Home");
-      })
-      .catch(function (error) {
-        Alert.alert("Incorrect input!", "Please re-enter your login input", [
-          { text: "OK", onPress: () => console.log("OK Pressed") },
-        ]);
-      });
+    try {
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      const user = userCredential.user;
+      if (rememberMe) {
+        await storeData("user", user);
+      } else {
+        await removeData("user");
+      }
+      navigation.navigate("Home");
+    } catch (error) {
+      Alert.alert("Incorrect input!", "Please re-enter your login input", [
+        { text: "OK", onPress: () => console.log("OK Pressed") },
+      ]);
+    }
   };
 
   const onForgotPasswordPressed = () => {

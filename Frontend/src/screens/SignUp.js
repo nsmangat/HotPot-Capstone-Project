@@ -4,6 +4,7 @@ import CustomInput from "../components/customInput";
 import CustomButton from "../components/customButton";
 import { auth } from "../../firebase/firebase";
 import { createUserWithEmailAndPassword } from "firebase/auth";
+import { storeData } from "../utils/storage";
 
 const SignUp = ({ navigation }) => {
   const [username, setUsername] = useState("");
@@ -13,16 +14,23 @@ const SignUp = ({ navigation }) => {
 
   const onRegisterPressed = async () => {
     console.info("Register");
-    createUserWithEmailAndPassword(auth, email, password)
-      .then(() => {
-        navigation.navigate("Home");
-      })
-      .catch(function (error) {
-        console.log(error);
-        Alert.alert("Invalid input!", error.message, [
-          { text: "OK", onPress: () => console.log("OK Pressed") },
-        ]);
-      });
+    try {
+      const userCredential = createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      const user = userCredential.user;
+
+      await storeData("user", user);
+
+      navigation.navigate("Home");
+    } catch (error) {
+      console.log(error);
+      Alert.alert("Invalid input!", error.message, [
+        { text: "OK", onPress: () => console.log("OK Pressed") },
+      ]);
+    }
   };
 
   const onSignInGooglePressed = () => {
