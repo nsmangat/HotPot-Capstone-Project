@@ -14,6 +14,11 @@ const Pothole = sequelize.define(
       allowNull: false,
       unique: false,
     },
+    description: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      unique: false,
+    },
     first_reported_date: {
       type: DataTypes.DATE,
       allowNull: false,
@@ -24,12 +29,22 @@ const Pothole = sequelize.define(
       allowNull: false,
       unique: false,
     },
-    location: {
+    coordinates: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      unique: false,
+    },
+    address: {
       type: DataTypes.STRING,
       allowNull: false,
       unique: false,
     },
     is_fixed: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      unique: false,
+    },
+    is_reported: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
       unique: false,

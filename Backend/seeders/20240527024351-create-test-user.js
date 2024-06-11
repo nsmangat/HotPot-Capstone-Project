@@ -33,7 +33,7 @@ module.exports = {
     const existingPothole = await queryInterface.rawSelect(
       "potholes",
       {
-        where: { location: "dummy_location" },
+        where: { coordinates: "dummy_coordinates" },
       },
       ["id"]
     );
@@ -42,10 +42,13 @@ module.exports = {
       await queryInterface.bulkInsert("potholes", [
         {
           pothole_size: "small",
+          description: "dummy_description",
           first_reported_date: new Date(),
           number_of_reports: 1,
-          location: "dummy_location",
+          coordinates: "dummy_coordinates",
+          address: "dummy_address",
           is_fixed: false,
+          is_reported: false,
           updated_at: new Date(),
         },
       ]);
@@ -56,6 +59,6 @@ module.exports = {
 
   async down(queryInterface, Sequelize) {
     await queryInterface.bulkDelete("users", { email: "test@example.com" });
-    await queryInterface.bulkDelete("potholes", { location: "dummy_location" });
+    await queryInterface.bulkDelete("potholes", { coordinates: "dummy_coordinates" });
   },
 };
