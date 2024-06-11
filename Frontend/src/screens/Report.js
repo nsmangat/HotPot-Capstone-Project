@@ -16,8 +16,9 @@ import ThemedText from "../components/themeText";
 import ScreenTitle from "../components/header";
 import axios from "axios";
 import { getData } from "../utils/storage";
+import { useEffect } from "react";
 
-const Report = () => {
+const Report = ({route}) => {
   const [location, setLocation] = useState("");
   const [details, setDetails] = useState("");
   const [description, setDescription] = useState("");
@@ -25,6 +26,20 @@ const Report = () => {
   const [requiredFieldsFilled, setRequiredFieldsFilled] = useState(false);
   const { theme, themes, toggleTheme } = useTheme();
   const currentTheme = themes[theme];
+
+  //Location stuff from map
+  useEffect(() => {
+    const { latitudeFromMap, longitudeFromMap } = route.params || {};
+
+    if (latitudeFromMap && longitudeFromMap) {
+      setLocation(`${latitudeFromMap}, ${longitudeFromMap}`);
+    }
+  }, [route.params]); // Run only when route.params changes
+
+  // const { latitudeFromMap, longitudeFromMap } = route.params || {};
+  // console.log("Latitude: ", latitudeFromMap);
+  // console.log("Longitude: ", longitudeFromMap);
+  console.log("Location: ", location);
 
   // For uploading image
   const pickImage = async () => {
