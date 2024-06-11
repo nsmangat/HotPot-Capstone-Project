@@ -29,6 +29,7 @@ const Login = ({ navigation }) => {
         password
       );
       const user = userCredential.user;
+      console.log(user.stsTokenManager.accessToken);
       if (rememberMe) {
         await storeData("user", user);
       } else {
