@@ -9,8 +9,10 @@ const firebaseConfig = {
   projectId: process.env.EXPO_PUBLIC_PROJECT_ID, 
   storageBucket: process.env.EXPO_PUBLIC_STORAGE_BUCKET, 
   messagingSenderId: process.env.EXPO_PUBLIC_MSG_SENDER_ID,
-  appId: Platform.OS === 'ios' ? process.env.EXPO_PUBLIC_APP_ID:EXPO_PUBLIC_APP_ID_ANDROID, 
+  appId: Platform.OS === 'ios' ? process.env.EXPO_PUBLIC_APP_ID: process.env.EXPO_PUBLIC_APP_ID_ANDROID, 
 };
+
+console.log('Firebase Config:', firebaseConfig);
 
 const app = initializeApp(firebaseConfig);
 //const auth = getAuth(app);
