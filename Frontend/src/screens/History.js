@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   StyleSheet,
@@ -15,71 +15,38 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { useTheme } from "../components/themeContext";
 import ThemedText from "../components/themeText";
 import ScreenTitle from "../components/header";
+import axios from "axios";
+import { getData } from "../utils/storage";
 
 const History = () => {
   const { theme, themes } = useTheme();
   const currentTheme = themes[theme];
 
-  const [history, setHistory] = useState([
-    {
-      location: "40 King St S, Waterloo, ON N2J 2W8",
-      dateTime: "2024-04-08 10:00 AM",
-      status: "not_fixed",
-    },
-    {
-      location: "187 King St S #102, Waterloo, ON N2J 1R1",
-      dateTime: "2024-04-08 3:00 PM",
-      status: "not_fixed",
-    },
-    {
-      location: "622 King St N Unit 3, Waterloo, ON N2V 0C7",
-      dateTime: "2024-04-09 11:00 PM",
-      status: "not_fixed",
-    },
-    {
-      location: "239 Weber St N, Waterloo, ON N2J 3H5",
-      dateTime: "2024-04-09 11:00 PM",
-      status: "fixed",
-    },
-    {
-      location: "2 King St N, Waterloo, ON N2J 1N8",
-      dateTime: "2024-04-09 11:00 PM",
-      status: "fixed",
-    },
-    {
-      location: "103 King St N, Waterloo, ON N2J 2X5",
-      dateTime: "2024-04-09 11:00 PM",
-      status: "fixed",
-    },
-    {
-      location: "150 University Ave W Unit 5B, Waterloo, ON N2L 3E4",
-      dateTime: "2024-04-09 11:00 PM",
-      status: "fixed",
-    },
-    {
-      location: "310 The Boardwalk, Waterloo, ON N2T 0A6",
-      dateTime: "2024-04-09 11:00 PM",
-      status: "not_fixed",
-    },
-    {
-      location: "203 Lester St, Waterloo, ON N2L 0B5",
-      dateTime: "2024-04-09 11:00 PM",
-      status: "fixed",
-    },
-    {
-      location: "355 Erb St. W, Waterloo, ON N2L 1W4",
-      dateTime: "2024-04-09 11:00 PM",
-      status: "fixed",
-    },
-    {
-      location: "14 Princess St W, Waterloo, ON N2L 2X8",
-      dateTime: "2024-04-09 11:00 PM",
-      status: "not_fixed",
-    },
-  ]);
+  const [history, setHistory] = useState([]);
 
   const [selectedItem, setSelectedItem] = useState(null);
   const [isHistoryDetailsVisible, setIsHistoryDetailsVisible] = useState(false);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const bearerToken = await getData("bearerToken");
+        const headers = {
+          Authorization: `Bearer ${bearerToken}`,
+        };
+
+        const res = await axios.get(
+          `http://${process.env.EXPO_PUBLIC_IP_ADDRESS}:3000/protected/history/`,
+          { headers }
+        );
+        setHistory(res.data);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   const toggleDetailsVisible = (item) => {
     setSelectedItem(item);
@@ -110,7 +77,7 @@ const History = () => {
                 <Icon name="circle" size={width * 0.054} color={status} />
               </View>
               <View style={styles.historyCol}>
-                <ThemedText style={styles.text}>{item.location}</ThemedText>
+                <ThemedText style={styles.text}>{item.address}</ThemedText>
                 <ThemedText style={styles.text}>{item.dateTime}</ThemedText>
               </View>
             </View>
@@ -153,7 +120,7 @@ const History = () => {
           <View style={styles.modalContainer}>
             <ThemedText style={styles.title}>Report Details</ThemedText>
             <ThemedText style={styles.text}>
-              Location: {selectedItem?.location}
+              Location: {selectedItem?.address}
             </ThemedText>
             <ThemedText style={styles.text}>
               Date Time: {selectedItem?.dateTime}
