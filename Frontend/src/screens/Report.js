@@ -67,7 +67,7 @@ const Report = ({route}) => {
   const handleSubmit = async () => {
     //API call later
     const response = await geocode(location)
-    const coords = response["features"][0]["properties"]["coordinates"]["latitude"] + ", " + response["features"][0]["properties"]["coordinates"]["longitude"];
+    const coords = await response["features"][0]["properties"]["coordinates"]["latitude"] + ", " + response["features"][0]["properties"]["coordinates"]["longitude"];
     console.log("REPORT SUBMIT-- Full Address: ", location, "Coordinates: ", coords);
 
 
@@ -81,28 +81,28 @@ const Report = ({route}) => {
 
     //Getting this from login, if there's an issue getting this might be
     //because a login is required but seems to work when user is remembered
-    const bearerToken = await getData("bearerToken");
+    // const bearerToken = await getData("bearerToken");
 
-    axios
-      .post(
-        `http://${process.env.EXPO_PUBLIC_IP_ADDRESS}:3000/protected/report`,
-        {
-          description: description,
-          details: details,
-          coordinates: location,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${bearerToken}`,
-          },
-        }
-      )
-      .then((res) => {
-        console.log(res.data);
-      })
-      .catch((err) => {
-        console.error(err);
-      });
+    // axios
+    //   .post(
+    //     `http://${process.env.EXPO_PUBLIC_IP_ADDRESS}:3000/protected/report`,
+    //     {
+    //       description: description,
+    //       details: details,
+    //       coordinates: location,
+    //     },
+    //     {
+    //       headers: {
+    //         Authorization: `Bearer ${bearerToken}`,
+    //       },
+    //     }
+    //   )
+    //   .then((res) => {
+    //     console.log(res.data);
+    //   })
+    //   .catch((err) => {
+    //     console.error(err);
+    //   });
 
     Alert.alert("Success", "Pothole successfully reported!", [
       { text: "OK", onPress: () => handleSuccess() },
