@@ -13,8 +13,9 @@ import {
 import { useTheme } from '../components/themeContext';
 import ThemedText from "../components/themeText";
 import MapView, { Callout, Marker } from "react-native-maps";
+import { reverseGeocode } from "../utils/mapbox/geocodeService.js";
 
-const Map = ({navigation}) => {
+const Map = ({ navigation }) => {
   const { theme, themes, toggleTheme } = useTheme();
   const currentTheme = themes[theme];
 
@@ -71,14 +72,20 @@ const Map = ({navigation}) => {
       latitude: 43.48010068075527,
       longitude: -80.51533622811151
     });
-  }
+  };
 
-  const draggablePinOnPress = () => {
+  const draggablePinOnPress = async () => {
     console.log("Button pressed!");
     addMarker();
-    navigation.navigate("Report", { 
+    const response = await reverseGeocode(draggableMarkerCoord.longitude, draggableMarkerCoord.latitude)
+    const fullAddressGeo = response["features"][0]["properties"]["full_address"];
+    //console.log("MAP -- Full address: ", fullAddressGeo);
+
+    navigation.navigate("Report", {
       latitudeFromMap: draggableMarkerCoord.latitude, 
-      longitudeFromMap: draggableMarkerCoord.longitude});
+      longitudeFromMap: draggableMarkerCoord.longitude, 
+      Address: fullAddressGeo,
+    });
   };
 
 
@@ -120,8 +127,8 @@ const Map = ({navigation}) => {
               longitude: -80.51533622811151
             }}
             onDragEnd={(e) => setDraggableMarkerCoord(e.nativeEvent.coordinate)}>
-            
-            
+
+
 
             <Callout onPress={draggablePinOnPress}>
               <ThemedText>Click here to add pothole.</ThemedText>

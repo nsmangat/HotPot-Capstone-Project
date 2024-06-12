@@ -20,6 +20,7 @@ import { useEffect } from "react";
 
 const Report = ({route}) => {
   const [location, setLocation] = useState("");
+  const [coordinates, setCoordinates] = useState("");
   const [details, setDetails] = useState("");
   const [description, setDescription] = useState("");
   const [image, setImage] = useState(null);
@@ -29,17 +30,15 @@ const Report = ({route}) => {
 
   //Location stuff from map
   useEffect(() => {
-    const { latitudeFromMap, longitudeFromMap } = route.params || {};
-
-    if (latitudeFromMap && longitudeFromMap) {
-      setLocation(`${latitudeFromMap}, ${longitudeFromMap}`);
+    const { latitudeFromMap, longitudeFromMap, Address } = route.params || {};
+    
+    if (latitudeFromMap && longitudeFromMap && Address) {
+      setCoordinates(`${latitudeFromMap}, ${longitudeFromMap}`);
+      setLocation(Address);
     }
   }, [route.params]); // Run only when route.params changes
 
-  // const { latitudeFromMap, longitudeFromMap } = route.params || {};
-  // console.log("Latitude: ", latitudeFromMap);
-  // console.log("Longitude: ", longitudeFromMap);
-  console.log("Location: ", location);
+  console.log("REPORT -- Full Address: ", location, "Coordinates: ", coordinates);  
 
   // For uploading image
   const pickImage = async () => {
