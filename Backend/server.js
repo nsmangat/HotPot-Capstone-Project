@@ -26,13 +26,12 @@ const pool = new Pool({
   port: process.env.DB_PORT,
 });
 
-app.use(verifyToken);
+app.use(express.json()); 
+app.use('/protected', verifyToken);
 
-// Get all users from DB
-app.get("/users", async (req, res) => {
+app.get("/protected/users", async (req, res) => {
   try {
     const users = await User.findAll();
-    console.log(users);
     res.json(users);
   } catch (err) {
     console.error("Error fetching users:", err);
@@ -41,9 +40,8 @@ app.get("/users", async (req, res) => {
 });
 
 //User routes
-app.use("/history", historyRoute);
+app.use('/protected/history',historyRoute);
 app.use("/protected/report", manualReportRoute);
-
 app.listen(port, () => {
   console.log(`Server is running at http://${process.env.IP_ADDRESS}:${port}/`);
 });

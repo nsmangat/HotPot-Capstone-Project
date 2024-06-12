@@ -12,8 +12,6 @@ const firebaseConfig = {
   appId: Platform.OS === 'ios' ? process.env.EXPO_PUBLIC_APP_ID: process.env.EXPO_PUBLIC_APP_ID_ANDROID, 
 };
 
-console.log('Firebase Config:', firebaseConfig);
-
 const app = initializeApp(firebaseConfig);
 //const auth = getAuth(app);
 const auth = initializeAuth(app, {
