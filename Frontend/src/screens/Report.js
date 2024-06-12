@@ -50,8 +50,6 @@ const Report = () => {
   };
 
   const handleSubmit = async () => {
-    //API call later
-
     if (!requiredFieldsFilled) {
       Alert.alert(
         "Error",

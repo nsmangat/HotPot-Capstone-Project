@@ -4,14 +4,11 @@ const Pothole = require("../models/pothole");
 const Report = require("../models/report");
 
 router.post("/", async (req, res) => {
-  //logic to increment report count for pothole coordinates are close to an existing report
+  //TODO: logic to increment report count when pothole coordinates are close to an existing report
 
   //else
 
   //first save to potholes table
-  console.log("uid:", req.user.uid);
-  firebase_uid = req.user.uid;
-
   try {
     const newPothole = await Pothole.create({
       pothole_size: req.body.description,
