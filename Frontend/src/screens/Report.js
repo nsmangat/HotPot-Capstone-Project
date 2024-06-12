@@ -14,6 +14,8 @@ import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { useTheme } from "../components/themeContext";
 import ThemedText from "../components/themeText";
 import ScreenTitle from "../components/header";
+import axios from "axios";
+import { getData } from "../utils/storage";
 
 const Report = () => {
   const [location, setLocation] = useState("");
@@ -47,7 +49,7 @@ const Report = () => {
     setRequiredFieldsFilled(false); // Reset requiredFieldsFilled state
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     //API call later
 
     if (!requiredFieldsFilled) {
@@ -57,6 +59,31 @@ const Report = () => {
       );
       return;
     }
+
+    //Getting this from login, if there's an issue getting this might be
+    //because a login is required but seems to work when user is remembered
+    const bearerToken = await getData("bearerToken");
+
+    axios
+      .post(
+        `http://${process.env.EXPO_PUBLIC_IP_ADDRESS}:3000/protected/report`,
+        {
+          description: description,
+          details: details,
+          coordinates: location,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${bearerToken}`,
+          },
+        }
+      )
+      .then((res) => {
+        console.log(res.data);
+      })
+      .catch((err) => {
+        console.error(err);
+      });
 
     Alert.alert("Success", "Pothole successfully reported!", [
       { text: "OK", onPress: () => handleSuccess() },
