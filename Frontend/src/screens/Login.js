@@ -13,7 +13,8 @@ import CustomButton from "../components/customButton";
 import Checkbox from "expo-checkbox";
 import { auth } from "../../firebase/firebase";
 import { signInWithEmailAndPassword } from "firebase/auth";
-import { storeData, removeData } from "../utils/storage";
+import { storeData, getData, removeData } from "../utils/storage";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const Login = ({ navigation }) => {
   const [rememberMe, setRememberMe] = useState(false);
@@ -35,6 +36,10 @@ const Login = ({ navigation }) => {
       } else {
         await removeData("user");
       }
+
+      //save bearer token to async storage for other components to use
+      await storeData("bearerToken", user.stsTokenManager.accessToken);
+
       navigation.navigate("Home");
     } catch (error) {
       Alert.alert("Incorrect input!", "Please re-enter your login input", [

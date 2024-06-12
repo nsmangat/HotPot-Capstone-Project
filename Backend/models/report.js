@@ -21,12 +21,12 @@ const Report = sequelize.define(
         key: "pothole_id",
       },
     },
-    user_id: {
-      type: DataTypes.INTEGER,
+    firebase_uid: {
+      type: DataTypes.STRING,
       allowNull: false,
       references: {
         model: User,
-        key: "id",
+        key: "firebase_uid",
       },
     },
     time_reported: {
