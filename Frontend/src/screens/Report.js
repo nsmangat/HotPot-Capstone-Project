@@ -17,6 +17,7 @@ import ScreenTitle from "../components/header";
 import axios from "axios";
 import { getData } from "../utils/storage";
 import { useEffect } from "react";
+import { geocode } from "../utils/mapbox/geocodeService.js";
 
 const Report = ({route}) => {
   const [location, setLocation] = useState("");
@@ -31,14 +32,14 @@ const Report = ({route}) => {
   //Location stuff from map
   useEffect(() => {
     const { latitudeFromMap, longitudeFromMap, Address } = route.params || {};
-    
+
     if (latitudeFromMap && longitudeFromMap && Address) {
       setCoordinates(`${latitudeFromMap}, ${longitudeFromMap}`);
       setLocation(Address);
     }
   }, [route.params]); // Run only when route.params changes
 
-  console.log("REPORT -- Full Address: ", location, "Coordinates: ", coordinates);  
+  //console.log("REPORT -- Full Address: ", location, "Coordinates: ", coordinates);  
 
   // For uploading image
   const pickImage = async () => {
@@ -64,6 +65,12 @@ const Report = ({route}) => {
   };
 
   const handleSubmit = async () => {
+    //API call later
+    const response = await geocode(location)
+    const coords = response["features"][0]["properties"]["coordinates"]["latitude"] + ", " + response["features"][0]["properties"]["coordinates"]["longitude"];
+    console.log("REPORT SUBMIT-- Full Address: ", location, "Coordinates: ", coords);
+
+
     if (!requiredFieldsFilled) {
       Alert.alert(
         "Error",
