@@ -21,41 +21,57 @@ import { getData } from "../utils/storage";
 const History = () => {
   const { theme, themes } = useTheme();
   const currentTheme = themes[theme];
-
   const [history, setHistory] = useState([]);
-
   const [selectedItem, setSelectedItem] = useState(null);
   const [isHistoryDetailsVisible, setIsHistoryDetailsVisible] = useState(false);
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const bearerToken = await getData("bearerToken");
-        const headers = {
-          Authorization: `Bearer ${bearerToken}`,
-        };
-
-        const res = await axios.get(
-          `http://${process.env.EXPO_PUBLIC_IP_ADDRESS}:3000/protected/history/`,
-          { headers }
-        );
-        setHistory(res.data);
-      } catch (err) {
-        console.error(err);
-      }
-    };
-
-    fetchData();
+    gethistory();
   }, []);
+
+  const gethistory = async () => {
+    try {
+      const bearerToken = await getData("bearerToken");
+      const headers = {
+        Authorization: `Bearer ${bearerToken}`,
+      };
+
+      const res = await axios.get(
+        `http://${process.env.EXPO_PUBLIC_IP_ADDRESS}:3000/protected/history/`,
+        { headers }
+      );
+      setHistory(res.data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   const toggleDetailsVisible = (item) => {
     setSelectedItem(item);
     setIsHistoryDetailsVisible(!isHistoryDetailsVisible);
   };
 
-  const deleteRow = (item) => {
-    console.log("Remove item: " + item.location);
-    Alert.alert("Success", "Deleted successfully");
+  const deleteRow = async (item) => {
+    try {
+      const bearerToken = await getData("bearerToken");
+      const headers = {
+        Authorization: `Bearer ${bearerToken}`,
+      };
+
+      const res = await axios.delete(
+        `http://${process.env.EXPO_PUBLIC_IP_ADDRESS}:3000/protected/history/${item.dateTime}`,
+        {
+          headers,
+        }
+      );
+
+      console.log(res.data);
+      Alert.alert("Success", "Deleted successfully");
+      gethistory();
+    } catch (err) {
+      console.error(err);
+      Alert.alert("Failure", "Network error! Please try again later");
+    }
   };
 
   const renderHistoryRow = ({ item }) => {

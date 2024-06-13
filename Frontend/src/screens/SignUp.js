@@ -15,7 +15,7 @@ const SignUp = ({ navigation }) => {
   const onRegisterPressed = async () => {
     console.info("Register");
     try {
-      const userCredential = createUserWithEmailAndPassword(
+      const userCredential = await createUserWithEmailAndPassword(
         auth,
         email,
         password

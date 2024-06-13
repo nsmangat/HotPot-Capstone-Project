@@ -26,7 +26,21 @@ async function getUserReportHistory(firebaseUID) {
     }));
   } catch (err) {
     console.error("Error fetching user report history:", err);
-    throw err;
+  }
+}
+
+async function deleteHistory(firebaseUID, time_reported){
+  try{
+    const result = await Report.destroy({
+      where:
+      {
+        time_reported:time_reported,
+        firebase_uid: firebaseUID,
+      },
+    });
+    return result;
+  }catch(err){
+    console.log("Error deleting history:", err);
   }
 }
 
@@ -37,6 +51,20 @@ router.get("/", async (req, res) => {
   } catch {
     console.error("Error fetching users:", err);
     res.status(500).send("Internal Server Error");
+  }
+});
+
+router.delete("/:reported_time", async (req, res) => {
+  try {
+    const result = await deleteHistory(req.user.uid, req.params.reported_time);
+    if(result){
+      res.status(200).json({message: 'Deleted history successfully!'})
+    }else{
+      res.status(400).json({message: 'History not found.'})
+    }
+  } catch {
+    console.error(err);
+    res.status(500).json("Internal Server Error");
   }
 });
 
