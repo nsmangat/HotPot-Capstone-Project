@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useCallback } from "react";
 import {
   View,
   StyleSheet,
@@ -17,6 +17,7 @@ import ThemedText from "../components/themeText";
 import ScreenTitle from "../components/header";
 import axios from "axios";
 import { getData } from "../utils/storage";
+import { useFocusEffect } from "@react-navigation/native";
 
 const History = () => {
   const { theme, themes } = useTheme();
@@ -25,11 +26,7 @@ const History = () => {
   const [selectedItem, setSelectedItem] = useState(null);
   const [isHistoryDetailsVisible, setIsHistoryDetailsVisible] = useState(false);
 
-  useEffect(() => {
-    gethistory();
-  }, []);
-
-  const gethistory = async () => {
+  const getHistory = async () => {
     try {
       const bearerToken = await getData("bearerToken");
       const headers = {
@@ -45,6 +42,12 @@ const History = () => {
       console.error(err);
     }
   };
+
+  useFocusEffect(
+    useCallback(() => {
+      getHistory();
+    }, [])
+  );
 
   const toggleDetailsVisible = (item) => {
     setSelectedItem(item);
@@ -67,7 +70,7 @@ const History = () => {
 
       console.log(res.data);
       Alert.alert("Success", "Deleted successfully");
-      gethistory();
+      getHistory();
     } catch (err) {
       console.error(err);
       Alert.alert("Failure", "Network error! Please try again later");
