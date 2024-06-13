@@ -9,6 +9,9 @@ router.post("/", async (req, res) => {
   //else
 
   //first save to potholes table
+
+  firebase_uid = req.user.uid;
+
   try {
     const newPothole = await Pothole.create({
       pothole_size: req.body.description,
