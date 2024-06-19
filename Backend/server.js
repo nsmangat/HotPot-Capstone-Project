@@ -16,6 +16,7 @@ app.use("/protected", verifyToken);
 //Import routes
 const historyRoute = require("./routes/history");
 const manualReportRoute = require("./routes/Report");
+const mapRoute = require("./routes/Map");
 
 // Create a PostgreSQL connection pool
 const pool = new Pool({
@@ -42,6 +43,8 @@ app.get("/protected/users", async (req, res) => {
 //User routes
 app.use('/protected/history',historyRoute);
 app.use("/protected/report", manualReportRoute);
+app.use("/protected/map", mapRoute);
+
 app.listen(port, () => {
   console.log(`Server is running at http://${process.env.IP_ADDRESS}:${port}/`);
 });

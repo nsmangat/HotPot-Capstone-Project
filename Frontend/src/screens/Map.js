@@ -9,7 +9,6 @@ import {
   Modal,
   Alert,
 } from "react-native";
-// import styles from "../components/styles";
 import { useTheme } from '../components/themeContext';
 import ThemedText from "../components/themeText";
 import MapView, { Callout, Marker } from "react-native-maps";
@@ -18,8 +17,6 @@ import { reverseGeocode } from "../utils/mapbox/geocodeService.js";
 const Map = ({ navigation }) => {
   const { theme, themes, toggleTheme } = useTheme();
   const currentTheme = themes[theme];
-
-
 
   const [markers, setMarkers] = useState([{
     index: 1,
