@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Text,
   View,
@@ -18,6 +18,8 @@ import { reverseGeocode } from "../utils/mapbox/geocodeService.js";
 const Map = ({ navigation }) => {
   const { theme, themes, toggleTheme } = useTheme();
   const currentTheme = themes[theme];
+
+
 
   const [markers, setMarkers] = useState([{
     index: 1,
@@ -54,6 +56,10 @@ const Map = ({ navigation }) => {
     longitude: -80.51533622811151
   });
 
+  // useEffect(() => {
+  //   resetDraggableMarker();
+  // }, [markers]);
+
   const addMarker = () => {
     const newMarker = {
       index: markers.length + 1,
@@ -64,8 +70,9 @@ const Map = ({ navigation }) => {
     };
 
     setMarkers([...markers, newMarker]);
-    resetDraggableMarker();
+    //resetDraggableMarker();
   };
+
 
   const resetDraggableMarker = () => {
     setDraggableMarkerCoord({
@@ -76,16 +83,26 @@ const Map = ({ navigation }) => {
 
   const draggablePinOnPress = async () => {
     console.log("Button pressed!");
-    addMarker();
-    const response = await reverseGeocode(draggableMarkerCoord.longitude, draggableMarkerCoord.latitude)
-    const fullAddressGeo = response["features"][0]["properties"]["full_address"];
-    //console.log("MAP -- Full address: ", fullAddressGeo);
 
-    navigation.navigate("Report", {
-      latitudeFromMap: draggableMarkerCoord.latitude, 
-      longitudeFromMap: draggableMarkerCoord.longitude, 
-      Address: fullAddressGeo,
-    });
+    addMarker();
+
+    try {
+      const response = await reverseGeocode(draggableMarkerCoord.longitude, draggableMarkerCoord.latitude)
+      const fullAddressGeo = response["features"][0]["properties"]["full_address"];
+      //console.log("MAP -- Full address: ", fullAddressGeo);
+
+      navigation.navigate("Report", {
+        latitudeFromMap: draggableMarkerCoord.latitude,
+        longitudeFromMap: draggableMarkerCoord.longitude,
+        Address: fullAddressGeo,
+      });
+
+      resetDraggableMarker();
+
+    } catch (error) {
+      console.error("Error during reverse geocoding:", error);
+      Alert.alert("Error", "Unable to fetch address. Please try again.");
+    }
   };
 
 
@@ -122,10 +139,7 @@ const Map = ({ navigation }) => {
           <Marker
             draggable
             pinColor="blue"
-            coordinate={{
-              latitude: 43.48010068075527,
-              longitude: -80.51533622811151
-            }}
+            coordinate={draggableMarkerCoord}
             onDragEnd={(e) => setDraggableMarkerCoord(e.nativeEvent.coordinate)}>
 
 
