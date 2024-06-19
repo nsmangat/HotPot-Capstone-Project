@@ -58,6 +58,7 @@ const Report = ({route}) => {
   // Clear all fields after successful submission
   const handleSuccess = () => {
     setLocation("");
+    setCoordinates("");
     setDetails("");
     setDescription("");
     setImage(null);
@@ -70,6 +71,31 @@ const Report = ({route}) => {
     const coords = await response["features"][0]["properties"]["coordinates"]["latitude"] + ", " + response["features"][0]["properties"]["coordinates"]["longitude"];
     console.log("REPORT SUBMIT-- Full Address: ", location, "Coordinates: ", coords);
 
+    let coords = coordinates;
+    
+    if (coords === "") {
+      try {
+        const response = await geocode(location);
+  
+        if (!response || !response.features || response.features.length === 0) {
+          throw new Error("No features found in geocode response");
+        }
+  
+        const feature = response.features[0];
+        if (!feature.properties || !feature.properties.coordinates) {
+          throw new Error("Invalid feature structure in geocode response");
+        }
+  
+        coords = `${feature.properties.coordinates.latitude}, ${feature.properties.coordinates.longitude}`;
+        console.log("REPORT SUBMIT-- Full Address: ", location, "Coordinates: ", coords);
+      } catch (error) {
+        console.error("Error during geocoding:", error);
+        Alert.alert("Error", "Unable to fetch coordinates. Please try again.");
+        return;
+      }
+    }
+
+
 
     if (!requiredFieldsFilled) {
       Alert.alert(
@@ -81,28 +107,29 @@ const Report = ({route}) => {
 
     //Getting this from login, if there's an issue getting this might be
     //because a login is required but seems to work when user is remembered
-    // const bearerToken = await getData("bearerToken");
+    const bearerToken = await getData("bearerToken");
 
-    // axios
-    //   .post(
-    //     `http://${process.env.EXPO_PUBLIC_IP_ADDRESS}:3000/protected/report`,
-    //     {
-    //       description: description,
-    //       details: details,
-    //       coordinates: location,
-    //     },
-    //     {
-    //       headers: {
-    //         Authorization: `Bearer ${bearerToken}`,
-    //       },
-    //     }
-    //   )
-    //   .then((res) => {
-    //     console.log(res.data);
-    //   })
-    //   .catch((err) => {
-    //     console.error(err);
-    //   });
+    axios
+      .post(
+        `http://${process.env.EXPO_PUBLIC_IP_ADDRESS}:3000/protected/report`,
+        {
+          description: description,
+          details: details,
+          coordinates: coords,
+          address: location,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${bearerToken}`,
+          },
+        }
+      )
+      .then((res) => {
+        console.log(res.data);
+      })
+      .catch((err) => {
+        console.error(err);
+      });
 
     Alert.alert("Success", "Pothole successfully reported!", [
       { text: "OK", onPress: () => handleSuccess() },

@@ -17,7 +17,7 @@ router.post("/", async (req, res) => {
       pothole_size: req.body.description,
       description: req.body.details,
       coordinates: req.body.coordinates,
-      address: "placeholder",
+      address: req.body.address,
       number_of_reports: 1,
       is_fixed: false,
       first_reported_date: new Date(),
