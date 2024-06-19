@@ -12,8 +12,8 @@ async function getAllPotholes(firebaseUID) {
             return {
                 Pothole_ID: pothole.dataValues.pothole_id,
                 Size: pothole.dataValues.pothole_size,
-                Latitude: parseFloat(coordinates[0]), // Parse the first element as latitude
-                Longitude: parseFloat(coordinates[1]), // Parse the second element as longitude
+                latitude: parseFloat(coordinates[0]), // Parse the first element as latitude
+                longitude: parseFloat(coordinates[1]), // Parse the second element as longitude
                 Address: pothole.dataValues.address,
                 NumberOfReports: pothole.dataValues.number_of_reports,
                 FirstReported: pothole.dataValues.first_reported_date,

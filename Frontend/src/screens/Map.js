@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import {
   Text,
   View,
@@ -13,49 +13,44 @@ import { useTheme } from '../components/themeContext';
 import ThemedText from "../components/themeText";
 import MapView, { Callout, Marker } from "react-native-maps";
 import { reverseGeocode } from "../utils/mapbox/geocodeService.js";
+import { useFocusEffect } from "@react-navigation/native";
+import { getData } from "../utils/storage";
+import axios from "axios";
 
 const Map = ({ navigation }) => {
   const { theme, themes, toggleTheme } = useTheme();
   const currentTheme = themes[theme];
 
-  const [markers, setMarkers] = useState([{
-    index: 1,
-    latitude: 43.4794,
-    longitude: -80.5180,
-    title: "Conestoga College - Waterloo Campus",
-    description: "HotPot Headquarters\nSomething else",
-  },
-  {
-    index: 2,
-    latitude: 43.478207111368164,
-    longitude: -80.51875002038042,
-    title: "Popeyes Waterloo Campus",
-    description: "Popeyes across Waterloo Campus",
-  },
-  {
-    index: 3,
-    latitude: 43.480203796852585,
-    longitude: -80.52000531986504,
-    title: "Goodlife - Waterloo Campus",
-    description: "GoodLife Fitness",
-  },
-  {
-    index: 4,
-    latitude: 43.48092949071893,
-    longitude: -80.52097301999295,
-    title: "Toyota - Waterloo Campus",
-    description: "Toyota Dealership",
-  },
-  ]);
+  const [markers, setMarkers] = useState([]);
 
   const [draggableMarkerCoord, setDraggableMarkerCoord] = useState({
     latitude: 43.48010068075527,
     longitude: -80.51533622811151
   });
 
-  // useEffect(() => {
-  //   resetDraggableMarker();
-  // }, [markers]);
+  const getPotholes = async () => {
+    try {
+      const bearerToken = await getData("bearerToken");
+      const headers = {
+        Authorization: `Bearer ${bearerToken}`,
+      };
+
+      const res = await axios.get(
+        `http://${process.env.EXPO_PUBLIC_IP_ADDRESS}:3000/protected/map/`,
+        { headers }
+      );
+      setMarkers(res.data);
+    } catch (err) {
+      console.error(err);
+    }
+
+  }
+
+  useFocusEffect(
+    useCallback(() => {
+      getPotholes();
+    }, [])
+  );
 
   const addMarker = () => {
     const newMarker = {
@@ -81,7 +76,7 @@ const Map = ({ navigation }) => {
   const draggablePinOnPress = async () => {
     console.log("Button pressed!");
 
-    addMarker();
+    //addMarker();
 
     try {
       const response = await reverseGeocode(draggableMarkerCoord.longitude, draggableMarkerCoord.latitude)
@@ -120,17 +115,26 @@ const Map = ({ navigation }) => {
           showsUserLocation={true}
           showsMyLocationButton={true}
         >
-          {/* Dummy list of multiple markers */}
+          {/* List of all markers */}
           {markers.map((marker) => (
             <Marker
-              key={marker.index}
+              key={marker.Pothole_ID}
               coordinate={{
                 latitude: marker.latitude,
                 longitude: marker.longitude,
               }}
-              title={marker.title}
-              description={marker.description}
-            />
+              // title={`Location: ${marker.Address}`}
+              // description={`Size: ${marker.Size}\nReports: ${marker.NumberOfReports}\nReported on:${marker.FirstReported}`}
+            >
+              <Callout>
+                <View style={{ flexDirection: 'column', alignItems: 'center', flexWrap: 'wrap'  }}>
+                  <Text style={{ fontWeight: 'bold' }}>Location: {marker.Address.split(',')[0] + ',' + marker.Address.split(',')[1]}</Text>
+                  <Text>Size: {marker.Size}</Text>
+                  <Text>First Reported Date: {new Date(marker.FirstReported).toLocaleString('en-US', { date: 'short', time: 'short' })}</Text>
+                  <Text>Number of Reports: {marker.NumberOfReports}</Text>
+                </View>
+              </Callout>
+            </Marker>
           ))}
           {/* Dummy draggable marker */}
           <Marker
@@ -138,8 +142,6 @@ const Map = ({ navigation }) => {
             pinColor="blue"
             coordinate={draggableMarkerCoord}
             onDragEnd={(e) => setDraggableMarkerCoord(e.nativeEvent.coordinate)}>
-
-
 
             <Callout onPress={draggablePinOnPress}>
               <ThemedText>Click here to add pothole.</ThemedText>
