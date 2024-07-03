@@ -100,9 +100,9 @@ const Map = ({ navigation }) => {
 
   return (
     <View style={styles.TitleContainer}>
-      <View name='buttonForDraggablePin' style={styles.titleContainer}>
+      {/* <View name='buttonForDraggablePin' style={styles.titleContainer}>
         <ThemedText style={styles.screenTitle}>Map</ThemedText>
-      </View>
+      </View> */}
       <View style={styles.container}>
         <MapView
           style={{ flex: 1 }}

@@ -5,7 +5,11 @@ const Pothole = require("../models/pothole");
 
 async function getAllPotholes(firebaseUID) {
     try {
-        const potholes = await Pothole.findAll();
+        const potholes = await Pothole.findAll({
+            where: {
+              is_fixed: false
+            }
+          });
 
         return potholes.map((pothole) => {
             const coordinates = pothole.dataValues.coordinates.split(','); // Split the string by comma

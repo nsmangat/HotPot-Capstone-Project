@@ -78,7 +78,7 @@ const History = () => {
   };
 
   const renderHistoryRow = ({ item }) => {
-    const status = item.status === "fixed" ? "green" : "red";
+    const status = item.is_fixed ? "green" : "red";
     const rightSwipeActions = () => {
       return (
         <TouchableOpacity onPress={() => deleteRow(item)}>

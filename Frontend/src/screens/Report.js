@@ -67,9 +67,6 @@ const Report = ({route}) => {
 
   const handleSubmit = async () => {
     //API call later
-    const response = await geocode(location)
-    const coords = await response["features"][0]["properties"]["coordinates"]["latitude"] + ", " + response["features"][0]["properties"]["coordinates"]["longitude"];
-    console.log("REPORT SUBMIT-- Full Address: ", location, "Coordinates: ", coords);
 
     let coords = coordinates;
     
