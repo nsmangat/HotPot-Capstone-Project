@@ -1,11 +1,10 @@
 import axios from 'axios';
-import { MAPBOX_TOKEN } from './mapboxConfig.js';
 
 
 const geocode = async (address) => {
     try {
         const response = await axios.get(
-            `https://api.mapbox.com/search/geocode/v6/forward?q=${encodeURIComponent(address)}&country=ca&types=address&access_token=${MAPBOX_TOKEN}`
+            `https://api.mapbox.com/search/geocode/v6/forward?q=${encodeURIComponent(address)}&country=ca&types=address&access_token=${process.env.EXPO_PUBLIC_MAPBOX_ACCESS_TOKEN}`
         );
         return response.data;
     } catch (error) {
@@ -17,7 +16,7 @@ const geocode = async (address) => {
 const reverseGeocode = async (longitude, latitude) => {
     try {
         const response = await axios.get(
-            `https://api.mapbox.com/search/geocode/v6/reverse?country=ca&limit=2&types=address&longitude=${longitude}&latitude=${latitude}&access_token=${MAPBOX_TOKEN}`
+            `https://api.mapbox.com/search/geocode/v6/reverse?country=ca&limit=2&types=address&longitude=${longitude}&latitude=${latitude}&access_token=${process.env.EXPO_PUBLIC_MAPBOX_ACCESS_TOKEN}`
         );
         return response.data;
     } catch (error) {
