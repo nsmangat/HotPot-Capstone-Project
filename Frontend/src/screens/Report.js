@@ -16,15 +16,30 @@ import ThemedText from "../components/themeText";
 import ScreenTitle from "../components/header";
 import axios from "axios";
 import { getData } from "../utils/storage";
+import { useEffect } from "react";
+import { geocode } from "../utils/mapbox/geocodeService.js";
 
-const Report = () => {
+const Report = ({route}) => {
   const [location, setLocation] = useState("");
+  const [coordinates, setCoordinates] = useState("");
   const [details, setDetails] = useState("");
   const [description, setDescription] = useState("");
   const [image, setImage] = useState(null);
   const [requiredFieldsFilled, setRequiredFieldsFilled] = useState(false);
   const { theme, themes, toggleTheme } = useTheme();
   const currentTheme = themes[theme];
+
+  //Location stuff from map
+  useEffect(() => {
+    const { latitudeFromMap, longitudeFromMap, Address } = route.params || {};
+
+    if (latitudeFromMap && longitudeFromMap && Address) {
+      setCoordinates(`${latitudeFromMap}, ${longitudeFromMap}`);
+      setLocation(Address);
+    }
+  }, [route.params]); // Run only when route.params changes
+
+  //console.log("REPORT -- Full Address: ", location, "Coordinates: ", coordinates);  
 
   // For uploading image
   const pickImage = async () => {
@@ -43,6 +58,7 @@ const Report = () => {
   // Clear all fields after successful submission
   const handleSuccess = () => {
     setLocation("");
+    setCoordinates("");
     setDetails("");
     setDescription("");
     setImage(null);
@@ -50,6 +66,34 @@ const Report = () => {
   };
 
   const handleSubmit = async () => {
+    //API call later
+
+    let coords = coordinates;
+    
+    if (coords === "") {
+      try {
+        const response = await geocode(location);
+  
+        if (!response || !response.features || response.features.length === 0) {
+          throw new Error("No features found in geocode response");
+        }
+  
+        const feature = response.features[0];
+        if (!feature.properties || !feature.properties.coordinates) {
+          throw new Error("Invalid feature structure in geocode response");
+        }
+  
+        coords = `${feature.properties.coordinates.latitude}, ${feature.properties.coordinates.longitude}`;
+        console.log("REPORT SUBMIT-- Full Address: ", location, "Coordinates: ", coords);
+      } catch (error) {
+        console.error("Error during geocoding:", error);
+        Alert.alert("Error", "Unable to fetch coordinates. Please try again.");
+        return;
+      }
+    }
+
+
+
     if (!requiredFieldsFilled) {
       Alert.alert(
         "Error",
@@ -68,7 +112,8 @@ const Report = () => {
         {
           description: description,
           details: details,
-          coordinates: location,
+          coordinates: coords,
+          address: location,
         },
         {
           headers: {
