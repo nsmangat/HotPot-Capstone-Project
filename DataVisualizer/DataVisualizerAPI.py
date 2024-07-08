@@ -1,11 +1,16 @@
 from flask import Flask, jsonify, request, send_file, render_template_string
 from flask_sqlalchemy import SQLAlchemy
+import matplotlib
+matplotlib.use('Agg') #need this line, else matplotlib gui warning and app crashes after a few fetches 
 import matplotlib.pyplot as plt
 import pandas as pd
 import os
 from io import BytesIO
 from sqlalchemy import func
 from dotenv import load_dotenv
+
+import base64
+
 
 app = Flask(__name__)
 load_dotenv()
@@ -26,6 +31,21 @@ class Pothole(db.Model):
     is_reported = db.Column(db.Boolean, nullable=False)
     updated_at = db.Column(db.Date, nullable=False, default=func.now())
 
+class Report(db.Model):
+    __tablename__ = 'reports'
+    report_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    pothole_id = db.Column(db.Integer, db.ForeignKey('potholes.pothole_id'), nullable=False)
+    firebase_uid = db.Column(db.String, nullable=False)  
+    time_reported = db.Column(db.Date, nullable=False, default=func.now())
+
+    pothole = db.relationship('Pothole', backref='reports')  
+
+def get_all_potholes():
+    return Pothole.query.all()
+
+def get_potholes_by_userid(firebase_uid):
+    return db.session.query(Pothole).join(Report).filter(Report.firebase_uid == firebase_uid).all()
+
 #Get the count of pothole reports by day
 def global_get_pothole_count_by_day():
     pothole_dates = db.session.query(
@@ -38,34 +58,92 @@ def global_get_pothole_count_by_day():
     counts_by_date = [{'date': date.date, 'count': date.count} for date in pothole_dates]
     return pd.DataFrame(counts_by_date)
 
-def create_line_graph_of_number_of_potholes_by_date(dataframe):
-    # Can use this to make multiple subplots in 1 image I think
-    fig, ax = plt.subplots()
+def user_get_pothole_count_by_day(firebase_uid):
+    user_pothole_dates = db.session.query(
+        func.date_trunc('day', Pothole.first_reported_date).label('date'),
+        func.count(Pothole.pothole_id).label('count')
+    ).join(Report).filter(Report.firebase_uid == firebase_uid).group_by(
+        func.date_trunc('day', Pothole.first_reported_date)
+    ).order_by('date').all()
 
-    #Doing it this way spaces out the x axis nicely compared to the commented out line below
-    dataframe.plot(kind='line', x='date', y='count', ax=ax)
-    # plt.plot(dataframe['date'], dataframe['count'])
-    plt.title('Potholes Reported Over Time')
-    plt.xlabel('Date')
-    plt.ylabel('Number of Potholes')
+    user_counts_by_date = [{'date': date.date, 'count': date.count} for date in user_pothole_dates]
+    return pd.DataFrame(user_counts_by_date)
 
+# def create_line_graph_of_number_of_potholes_by_date(dataframe, plot_title):
+#     # Can use this to make multiple subplots in 1 image I think
+#     fig, ax = plt.subplots()
+
+#     #Doing it this way spaces out the x axis nicely compared to the commented out line below
+#     dataframe.plot(kind='line', x='date', y='count', ax=ax)
+#     # plt.plot(dataframe['date'], dataframe['count'])
+#     plt.title('Potholes Reported Over Time')
+#     plt.xlabel('Date')
+#     plt.ylabel('Number of Potholes')
+
+#     img = BytesIO()
+#     plt.savefig(img, format='png')
+
+#     #reset the file pointer to the beginning of the image to prepare it for sending from the beginning since BytesIO leaves it at the end
+#     img.seek(0)
+#     plt.close(fig)
+
+#     return img
+
+# def create_line_graph_subplots(global_pothole_dates, user_pothole_dates):
+
+def create_line_graph_subplots(global_pothole_dates):
+    fig, axes = plt.subplots(nrows=2, ncols=1, figsize=(8, 8))
+
+    global_pothole_dates.plot(kind='line', x='date', y='count', ax=axes[0])
+    axes[0].set_title('All Potholes Reported Over Time')
+    axes[0].set_xlabel('Date')
+    axes[0].set_ylabel('Number of Potholes')
+
+    # user_pothole_dates.plot(kind='line', x='date', y='count', ax=axes[1])
+    # axes[1].set_title('Potholes Reported by You')
+    # axes[1].set_xlabel('Date')
+    # axes[1].set_ylabel('Number of Potholes')
+
+    plt.tight_layout()
     img = BytesIO()
     plt.savefig(img, format='png')
-
-    #reset the file pointer to the beginning of the image to prepare it for sending from the beginning since BytesIO leaves it at the end
     img.seek(0)
     plt.close(fig)
-
     return img
+
 
 @app.route('/visualize', methods=['GET'])
 def visualize():
-    df_pothole_reports_by_day_count = global_get_pothole_count_by_day()
-    img = create_line_graph_of_number_of_potholes_by_date(df_pothole_reports_by_day_count)
+    # firebase_uid = request.args.get('firebase_uid')
+    # print(firebase_uid)
 
-    return send_file(img, mimetype='image/png')
+    df_pothole_reports_by_day_count = global_get_pothole_count_by_day()
+    print(df_pothole_reports_by_day_count.head(5))
+
+    # if firebase_uid is not None:
+    # df_user_pothole_reports_by_day_count = user_get_pothole_count_by_day(firebase_uid)
+    # print(df_user_pothole_reports_by_day_count.head(5))
+
+
+    # img_global_count_potholes = create_line_graph_of_number_of_potholes_by_date(df_pothole_reports_by_day_count, 'Potholes Reported Over Time')
+    # img_user_count_potholes = create_line_graph_of_number_of_potholes_by_date(df_user_pothole_reports_by_day_count, 'Potholes Reported by You')
+
+
+    # image_data_visualizations = create_line_graph_subplots(df_pothole_reports_by_day_count, df_user_pothole_reports_by_day_count)
+    image_data_visualizations = create_line_graph_subplots(df_pothole_reports_by_day_count)
+
+
+
+    # return send_file(image_data_visualizations, mimetype='image/png')
+
+    img_base64  = base64.b64encode(image_data_visualizations.getvalue()).decode()
+    return render_template_string('<img src="data:image/png;base64,{{ base64 }}">', base64=img_base64 )
 
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    # Might have to chance port to not conflict with scraper?
+    app.run(debug=True, host='0.0.0.0', port=5000)
+
+
+#get rid of the legend in the graph
