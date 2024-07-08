@@ -13,6 +13,7 @@ import { useTheme } from "../components/themeContext";
 import ScreenTitle from "../components/header";
 import axios from "axios";
 import { useFocusEffect } from "@react-navigation/native";
+import { getData } from "../utils/storage";
 
 const DataVisualizations = () => {
   const { theme, themes, toggleTheme } = useTheme();
@@ -65,12 +66,17 @@ const DataVisualizations = () => {
   // };
 
   const getDataVisualizationImage = async () => {
+    const bearerToken = await getData("bearerToken");
+
     setLoading(true);
     try {
       const response = await axios.get(
         `http://${process.env.EXPO_PUBLIC_IP_ADDRESS}:5000/visualize`,
         {
-          responseType: "json", // Ensure response type is correct
+          headers: {
+            Authorization: `Bearer ${bearerToken}`,
+          },
+          responseType: "json",
         }
       );
       // console.log(response.data);
