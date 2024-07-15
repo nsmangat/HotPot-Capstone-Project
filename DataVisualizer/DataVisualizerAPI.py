@@ -141,7 +141,7 @@ def create_line_graph(dataframe, title):
 
     #Get rid of the default legend
     ax.get_legend().remove()
-    
+
     plt.title(title)
     plt.xlabel('Date')
     plt.ylabel('Number of Potholes')
@@ -161,6 +161,7 @@ def create_line_graph(dataframe, title):
 def visualize():
     firebase_authentication = request.headers.get('Authorization')
     firebase_uid = None
+    print(firebase_authentication)
 
     if firebase_authentication:
         try:
@@ -170,6 +171,7 @@ def visualize():
             #Authorize
             decoded_token = auth.verify_id_token(firebase_token)
             firebase_uid = decoded_token['uid']
+            print(f"Authenticated user: {firebase_uid}")
 
         except Exception as e:
             print(f"Authentication error: {e}")    
@@ -197,6 +199,10 @@ def visualize():
     global_fixed_vs_unfixed_pie_chart_img_base64 = base64.b64encode(global_fixed_vs_unfixed_pie_chart_img.getvalue()).decode()
     user_pothole_count_line_graph_img_base64 = base64.b64encode(user_pothole_count_line_graph_img.getvalue()).decode() if user_pothole_count_line_graph_img else None
     user_fixed_vs_unfixed_pie_chart_img_base64 = base64.b64encode(user_fixed_vs_unfixed_pie_chart_img.getvalue()).decode() if user_fixed_vs_unfixed_pie_chart_img else None
+
+    if(global_pothole_count_line_graph_img_base64 and global_fixed_vs_unfixed_pie_chart_img_base64 and 
+       user_pothole_count_line_graph_img_base64 and user_fixed_vs_unfixed_pie_chart_img_base64):
+        print("All images created successfully")
 
     return jsonify({
         'global_pothole_count_line_graph': global_pothole_count_line_graph_img_base64,
