@@ -8,7 +8,6 @@ import {
   ScrollView,
   ActivityIndicator,
 } from "react-native";
-import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { useTheme } from "../components/themeContext";
 import ScreenTitle from "../components/header";
 import axios from "axios";
@@ -18,83 +17,17 @@ import { getData } from "../utils/storage";
 const DataVisualizations = () => {
   const { theme, themes, toggleTheme } = useTheme();
   const currentTheme = themes[theme];
-  const [imageUrl, setImageUrl] = useState(null);
   const [loading, setLoading] = useState(true);
   const [images, setImages] = useState({
-    global_line: null,
-    global_pie: null,
-    user_line: null,
-    user_pie: null,
+    global_pothole_count_line_graph: null,
+    global_fixed_vs_unfixed_pie_chart: null,
+    user_pothole_count_line_graph: null,
+    user_fixed_vs_unfixed_pie_chart: null,
   });
 
-  //Function to get the data visualization images from the Data Visualizer Flask project
-
-  //On page load, get the data visualization images
-  // useEffect(() => {
-  //   try {
-  //     const response = axios.get("http://127.0.0.1:5000/visualize", {
-  //       responseType: "blob",
-  //     });
-
-  //     //Object urls are used to reference BLOBs (binary large objects) as files
-  //     const imageUrl = URL.createObjectURL(response.data);
-  //     setImageUrl(imageUrl);
-  //   } catch (error) {
-  //     console.error("Error getting image:", error);
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // }, []);
-
-  // const getDataVisualizationImage = async () => {
-  //   setLoading(true);
-  //   try {
-  //     const response = await axios.get(
-  //       `http://${process.env.EXPO_PUBLIC_IP_ADDRESS}:5000/visualize`,
-  //       {
-  //         responseType: "blob",
-  //       }
-  //     );
-
-  //     console.log(response.data);
-
-  //     // Create a blob from the response data
-  //     const blobData = new Blob([response.data], { type: "image/png" });
-
-  //     // Object URLs are used to reference BLOBs (binary large objects) as files
-  //     const imageUrl = URL.createObjectURL(blobData);
-  //     setImageUrl(imageUrl);
-  //   } catch (error) {
-  //     console.error("Error getting image:", error);
-  //   } finally {
-  //     setLoading(false); // Stop loading
-  //   }
-  // };
-
-  const getDataVisualizationImage = async () => {
+  const getDataVisualizationImages = async () => {
+    //Need to send the bearer token to authenticate for user specific images
     const bearerToken = await getData("bearerToken");
-
-    // setLoading(true);
-    // try {
-    //   const response = await axios.get(
-    //     `http://${process.env.EXPO_PUBLIC_IP_ADDRESS}:5000/visualize`,
-    //     {
-    //       headers: {
-    //         Authorization: `Bearer ${bearerToken}`,
-    //       },
-    //       responseType: "json",
-    //     }
-    //   );
-    //   // console.log(response.data);
-    //   // setImageUrl(response.data);
-
-    //   const base64Data = response.data.split(",")[1];
-    //   setImageUrl(base64Data);
-    // } catch (error) {
-    //   console.error("Error getting image:", error);
-    // } finally {
-    //   setLoading(false);
-    // }
 
     setLoading(true);
     try {
@@ -117,50 +50,9 @@ const DataVisualizations = () => {
 
   useFocusEffect(
     useCallback(() => {
-      getDataVisualizationImage();
+      getDataVisualizationImages();
     }, [])
   );
-
-  //   return (
-  //     <View
-  //       style={[
-  //         styles.pageView,
-  //         { backgroundColor: currentTheme.backgroundColor },
-  //       ]}
-  //     >
-  //       <ScreenTitle name="chart-areaspline" title="Data Visualizations" />
-  //       <ScrollView horizontal={false} style={styles.scrollView}>
-  //         {loading ? (
-  //           <ActivityIndicator size="large" color={currentTheme.primaryColor} />
-  //         ) : (
-  //           <Image source={{ uri: imageUrl }} style={styles.retrievedImage} />
-  //         )}
-  //       </ScrollView>
-  //     </View>
-  //   );
-  // };
-
-  //   return (
-  //     <View
-  //       style={[
-  //         styles.pageView,
-  //         { backgroundColor: currentTheme.backgroundColor },
-  //       ]}
-  //     >
-  //       <ScreenTitle name="chart-areaspline" title="Data Visualizations" />
-  //       <ScrollView horizontal={false} style={styles.scrollView}>
-  //         {loading ? (
-  //           <ActivityIndicator size="large" color={currentTheme.primaryColor} />
-  //         ) : (
-  //           <Image
-  //             source={{ uri: `data:image/png;base64,${imageUrl}` }}
-  //             style={styles.retrievedImage}
-  //           />
-  //         )}
-  //       </ScrollView>
-  //     </View>
-  //   );
-  // };
 
   return (
     <View
@@ -175,27 +67,35 @@ const DataVisualizations = () => {
           <ActivityIndicator size="large" color={currentTheme.primaryColor} />
         ) : (
           <>
-            {images.global_line && (
+            {images.global_pothole_count_line_graph && (
               <Image
-                source={{ uri: `data:image/png;base64,${images.global_line}` }}
+                source={{
+                  uri: `data:image/png;base64,${images.global_pothole_count_line_graph}`,
+                }}
                 style={styles.retrievedImage}
               />
             )}
-            {images.global_pie && (
+            {images.global_fixed_vs_unfixed_pie_chart && (
               <Image
-                source={{ uri: `data:image/png;base64,${images.global_pie}` }}
+                source={{
+                  uri: `data:image/png;base64,${images.global_fixed_vs_unfixed_pie_chart}`,
+                }}
                 style={styles.retrievedImage}
               />
             )}
-            {images.user_line && (
+            {images.user_pothole_count_line_graph && (
               <Image
-                source={{ uri: `data:image/png;base64,${images.user_line}` }}
+                source={{
+                  uri: `data:image/png;base64,${images.user_pothole_count_line_graph}`,
+                }}
                 style={styles.retrievedImage}
               />
             )}
-            {images.user_pie && (
+            {images.user_fixed_vs_unfixed_pie_chart && (
               <Image
-                source={{ uri: `data:image/png;base64,${images.user_pie}` }}
+                source={{
+                  uri: `data:image/png;base64,${images.user_fixed_vs_unfixed_pie_chart}`,
+                }}
                 style={styles.retrievedImage}
               />
             )}
@@ -205,10 +105,6 @@ const DataVisualizations = () => {
     </View>
   );
 };
-
-// const StaticImage = ({ imageSource }) => {
-//   return <Image source={imageSource} style={styles.staticImage} />;
-// };
 
 const { width, height } = Dimensions.get("window");
 
