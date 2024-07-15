@@ -8,7 +8,7 @@ import os
 from io import BytesIO
 from sqlalchemy import func
 from dotenv import load_dotenv
-
+import datetime
 import base64
 import firebase_admin
 from firebase_admin import auth
@@ -54,12 +54,18 @@ def get_all_potholes():
 def get_potholes_by_userid(firebase_uid):
     return db.session.query(Pothole).join(Report).filter(Report.firebase_uid == firebase_uid).all()
 
+def get_last_4_weeks():
+    today = datetime.date.today()
+    four_weeks_ago = today - datetime.timedelta(weeks=4)
+    return four_weeks_ago
+
 #Get the count of pothole reports by day
 def global_get_pothole_count_by_day():
+    dates_in_last_4_weeks = get_last_4_weeks()
     pothole_dates = db.session.query(
         func.date_trunc('day', Pothole.first_reported_date).label('date'),
         func.count(Pothole.pothole_id).label('count')
-    ).group_by(
+    ).filter(Pothole.first_reported_date >= dates_in_last_4_weeks).group_by(
         func.date_trunc('day', Pothole.first_reported_date)
     ).order_by('date').all()
 
@@ -67,15 +73,33 @@ def global_get_pothole_count_by_day():
     return pd.DataFrame(counts_by_date)
 
 def user_get_pothole_count_by_day(firebase_uid):
+    dates_in_last_4_weeks = get_last_4_weeks()
     user_pothole_dates = db.session.query(
         func.date_trunc('day', Pothole.first_reported_date).label('date'),
         func.count(Pothole.pothole_id).label('count')
-    ).join(Report).filter(Report.firebase_uid == firebase_uid).group_by(
+    ).join(Report).filter(Report.firebase_uid == firebase_uid, Pothole.first_reported_date >= dates_in_last_4_weeks).group_by(
         func.date_trunc('day', Pothole.first_reported_date)
     ).order_by('date').all()
 
     user_counts_by_date = [{'date': date.date, 'count': date.count} for date in user_pothole_dates]
     return pd.DataFrame(user_counts_by_date)
+
+def get_global_pothole_fix_status():
+    dates_in_last_4_weeks = get_last_4_weeks()
+    fixed = db.session.query(
+        func.count(Pothole.pothole_id)
+        ).filter(Pothole.is_fixed == True, Pothole.first_reported_date >= dates_in_last_4_weeks).scalar()
+    not_fixed = db.session.query(func.count(Pothole.pothole_id)
+                                 ).filter(Pothole.is_fixed == False, Pothole.first_reported_date >= dates_in_last_4_weeks).scalar()
+    return fixed, not_fixed
+
+def get_user_pothole_fix_status(firebase_uid):
+    dates_in_last_4_weeks = get_last_4_weeks()
+    fixed = db.session.query(func.count(Pothole.pothole_id)
+                             ).join(Report).filter(Report.firebase_uid == firebase_uid, Pothole.is_fixed == True, Pothole.first_reported_date >= dates_in_last_4_weeks).scalar()
+    not_fixed = db.session.query(func.count(Pothole.pothole_id)
+                                 ).join(Report).filter(Report.firebase_uid == firebase_uid, Pothole.is_fixed == False, Pothole.first_reported_date >= dates_in_last_4_weeks).scalar()
+    return fixed, not_fixed
 
 # def create_line_graph_of_number_of_potholes_by_date(dataframe, plot_title):
 #     # Can use this to make multiple subplots in 1 image I think
@@ -97,24 +121,52 @@ def user_get_pothole_count_by_day(firebase_uid):
 
 #     return img
 
-def create_line_graph_subplots(global_pothole_dates, user_pothole_dates=None):
-    fig, axes = plt.subplots(nrows=2, ncols=1, figsize=(8, 8))
+def create_pie_chart(data, labels, title):
+    fig, ax = plt.subplots()
+    ax.pie(data, labels=labels, autopct='%1.1f%%', startangle=90)
+    ax.axis('equal')
+    plt.title(title)
 
-    global_pothole_dates.plot(kind='line', x='date', y='count', ax=axes[0])
-    axes[0].legend([])
-    axes[0].set_title('All Potholes Reported Over Time')
-    axes[0].set_xlabel('Date')
-    axes[0].set_ylabel('Number of Potholes')
-
-    if user_pothole_dates is not None:
-        user_pothole_dates.plot(kind='line', x='date', y='count', ax=axes[1])
-        axes[1].legend([])
-        axes[1].set_title('Potholes Reported by You')
-        axes[1].set_xlabel('Date')
-        axes[1].set_ylabel('Number of Potholes')
+    img = BytesIO()
+    plt.savefig(img, format='png')
+    img.seek(0)
+    plt.close(fig)
+    return img
 
 
-    plt.tight_layout()
+
+# def create_line_graph_subplots(global_pothole_dates, user_pothole_dates=None):
+#     fig, axes = plt.subplots(nrows=2, ncols=1, figsize=(8, 8))
+
+#     global_pothole_dates.plot(kind='line', x='date', y='count', ax=axes[0])
+#     axes[0].legend([])
+#     axes[0].set_title('All Potholes Reported Over Time')
+#     axes[0].set_xlabel('Date')
+#     axes[0].set_ylabel('Number of Potholes')
+
+#     if user_pothole_dates is not None:
+#         user_pothole_dates.plot(kind='line', x='date', y='count', ax=axes[1])
+#         axes[1].legend([])
+#         axes[1].set_title('Potholes Reported by You')
+#         axes[1].set_xlabel('Date')
+#         axes[1].set_ylabel('Number of Potholes')
+
+
+#     plt.tight_layout()
+#     img = BytesIO()
+#     plt.savefig(img, format='png')
+#     img.seek(0)
+#     plt.close(fig)
+#     return img
+
+def create_line_graph(dataframe, title):
+    fig, ax = plt.subplots()
+    dataframe.plot(kind='line', x='date', y='count', ax=ax)
+    ax.legend([])
+    plt.title(title)
+    plt.xlabel('Date')
+    plt.ylabel('Number of Potholes')
+
     img = BytesIO()
     plt.savefig(img, format='png')
     img.seek(0)
@@ -141,35 +193,64 @@ def visualize():
     print("firebase id is", firebase_uid)
 
 
-    df_pothole_reports_by_day_count = global_get_pothole_count_by_day()
-    print(df_pothole_reports_by_day_count.head(5))
 
-    if firebase_uid is not None:
-        df_user_pothole_reports_by_day_count = user_get_pothole_count_by_day(firebase_uid)
-        print(df_user_pothole_reports_by_day_count.head(5))
-    else:
-        df_user_pothole_reports_by_day_count = None
+    # if firebase_uid is not None:
+    #     df_user_pothole_reports_by_day_count = user_get_pothole_count_by_day(firebase_uid)
+    #     print(df_user_pothole_reports_by_day_count.head(5))
+    # else:
+    #     df_user_pothole_reports_by_day_count = None
 
 
     # img_global_count_potholes = create_line_graph_of_number_of_potholes_by_date(df_pothole_reports_by_day_count, 'Potholes Reported Over Time')
     # img_user_count_potholes = create_line_graph_of_number_of_potholes_by_date(df_user_pothole_reports_by_day_count, 'Potholes Reported by You')
 
 
-    image_data_visualizations = create_line_graph_subplots(df_pothole_reports_by_day_count, df_user_pothole_reports_by_day_count)
+    # image_data_visualizations = create_line_graph_subplots(df_pothole_reports_by_day_count, df_user_pothole_reports_by_day_count)
     # image_data_visualizations = create_line_graph_subplots(df_pothole_reports_by_day_count)
 
 
 
     # return send_file(image_data_visualizations, mimetype='image/png')
 
-    img_base64  = base64.b64encode(image_data_visualizations.getvalue()).decode()
-    return render_template_string('<img src="data:image/png;base64,{{ base64 }}">', base64=img_base64 )
+    # img_base64  = base64.b64encode(image_data_visualizations.getvalue()).decode()
+    # return render_template_string('<img src="data:image/png;base64,{{ base64 }}">', base64=img_base64 )
+
+
+
+
+
+
+    
+    df_pothole_reports_by_day_count = global_get_pothole_count_by_day()
+    img_global_line = create_line_graph(df_pothole_reports_by_day_count, 'Pothole Reports in the Last 4 Weeks')
+
+    fixed, unfixed = get_global_pothole_fix_status()
+    img_pie_global = create_pie_chart([fixed, unfixed], ['Fixed', 'Unfixed'], 'Fixed vs Unfixed Potholes in the Last 4 Weeks')
+
+    img_user_line, img_pie_user = None, None
+
+    if firebase_uid is not None:
+        df_user_pothole_reports_by_day_count = user_get_pothole_count_by_day(firebase_uid)
+        img_user_line = create_line_graph(df_user_pothole_reports_by_day_count, 'Potholes Reported by You')
+
+        fixed_user, unfixed_user = get_user_pothole_fix_status(firebase_uid)
+        img_pie_user = create_pie_chart([fixed_user, unfixed_user], ['Fixed', 'Unfixed'], 'User Fixed vs Unfixed Potholes (Last 4 Weeks)')
+
+    img_global_line_base64 = base64.b64encode(img_global_line.getvalue()).decode()
+    pie_global_base64 = base64.b64encode(img_pie_global.getvalue()).decode()
+    img_user_line_base64 = base64.b64encode(img_user_line.getvalue()).decode() if img_user_line else None
+    pie_user_base64 = base64.b64encode(img_pie_user.getvalue()).decode() if img_pie_user else None
+
+    return jsonify({
+        'global_line': img_global_line_base64,
+        'global_pie': pie_global_base64,
+        'user_line': img_user_line_base64,
+        'user_pie': pie_user_base64
+    })
+
 
 
 
 if __name__ == '__main__':
-    # Might have to chance port to not conflict with scraper?
+    # Might have to change port to not conflict with scraper?
     app.run(debug=True, host='0.0.0.0', port=5000)
-
-
-#get rid of the legend in the graph

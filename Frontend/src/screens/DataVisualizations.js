@@ -20,6 +20,12 @@ const DataVisualizations = () => {
   const currentTheme = themes[theme];
   const [imageUrl, setImageUrl] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [images, setImages] = useState({
+    global_line: null,
+    global_pie: null,
+    user_line: null,
+    user_pie: null,
+  });
 
   //Function to get the data visualization images from the Data Visualizer Flask project
 
@@ -68,6 +74,28 @@ const DataVisualizations = () => {
   const getDataVisualizationImage = async () => {
     const bearerToken = await getData("bearerToken");
 
+    // setLoading(true);
+    // try {
+    //   const response = await axios.get(
+    //     `http://${process.env.EXPO_PUBLIC_IP_ADDRESS}:5000/visualize`,
+    //     {
+    //       headers: {
+    //         Authorization: `Bearer ${bearerToken}`,
+    //       },
+    //       responseType: "json",
+    //     }
+    //   );
+    //   // console.log(response.data);
+    //   // setImageUrl(response.data);
+
+    //   const base64Data = response.data.split(",")[1];
+    //   setImageUrl(base64Data);
+    // } catch (error) {
+    //   console.error("Error getting image:", error);
+    // } finally {
+    //   setLoading(false);
+    // }
+
     setLoading(true);
     try {
       const response = await axios.get(
@@ -79,17 +107,12 @@ const DataVisualizations = () => {
           responseType: "json",
         }
       );
-      // console.log(response.data);
-      // setImageUrl(response.data);
-
-      const base64Data = response.data.split(",")[1];
-      setImageUrl(base64Data);
+      setImages(response.data);
     } catch (error) {
-      console.error("Error getting image:", error);
+      console.error("Error getting images:", error);
     } finally {
       setLoading(false);
     }
-    //comment
   };
 
   useFocusEffect(
@@ -117,6 +140,28 @@ const DataVisualizations = () => {
   //   );
   // };
 
+  //   return (
+  //     <View
+  //       style={[
+  //         styles.pageView,
+  //         { backgroundColor: currentTheme.backgroundColor },
+  //       ]}
+  //     >
+  //       <ScreenTitle name="chart-areaspline" title="Data Visualizations" />
+  //       <ScrollView horizontal={false} style={styles.scrollView}>
+  //         {loading ? (
+  //           <ActivityIndicator size="large" color={currentTheme.primaryColor} />
+  //         ) : (
+  //           <Image
+  //             source={{ uri: `data:image/png;base64,${imageUrl}` }}
+  //             style={styles.retrievedImage}
+  //           />
+  //         )}
+  //       </ScrollView>
+  //     </View>
+  //   );
+  // };
+
   return (
     <View
       style={[
@@ -129,10 +174,32 @@ const DataVisualizations = () => {
         {loading ? (
           <ActivityIndicator size="large" color={currentTheme.primaryColor} />
         ) : (
-          <Image
-            source={{ uri: `data:image/png;base64,${imageUrl}` }}
-            style={styles.retrievedImage}
-          />
+          <>
+            {images.global_line && (
+              <Image
+                source={{ uri: `data:image/png;base64,${images.global_line}` }}
+                style={styles.retrievedImage}
+              />
+            )}
+            {images.global_pie && (
+              <Image
+                source={{ uri: `data:image/png;base64,${images.global_pie}` }}
+                style={styles.retrievedImage}
+              />
+            )}
+            {images.user_line && (
+              <Image
+                source={{ uri: `data:image/png;base64,${images.user_line}` }}
+                style={styles.retrievedImage}
+              />
+            )}
+            {images.user_pie && (
+              <Image
+                source={{ uri: `data:image/png;base64,${images.user_pie}` }}
+                style={styles.retrievedImage}
+              />
+            )}
+          </>
         )}
       </ScrollView>
     </View>
@@ -158,9 +225,9 @@ const styles = StyleSheet.create({
   },
   retrievedImage: {
     width: width * 0.9,
-    height: height * 0.6,
+    height: height * 0.38,
     marginRight: width * 0.02,
-    marginLeft: width * 0.04,
+    marginLeft: width * 0.02,
     resizeMode: "contain",
   },
 });
