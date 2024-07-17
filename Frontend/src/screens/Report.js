@@ -4,7 +4,6 @@ import {
   TextInput,
   StyleSheet,
   View,
-  Image,
   TouchableOpacity,
   Dimensions,
   Alert,
@@ -13,7 +12,6 @@ import {
   ScrollView,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
-import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { useTheme } from "../components/themeContext";
 import ThemedText from "../components/themeText";
 import ScreenTitle from "../components/header";
@@ -23,11 +21,13 @@ import { useEffect } from "react";
 import { geocode } from "../utils/mapbox/geocodeService.js";
 
 const Report = ({ route }) => {
-  const [location, setLocation] = useState("");
+  // const [location, setLocation] = useState("");
+  const [fullLocationAddress, setFullLocationAddress] = useState("");
+  const [location, setLocation] = useState({ streetAddress: "", city: "" });
   const [coordinates, setCoordinates] = useState("");
   const [details, setDetails] = useState("");
   const [description, setDescription] = useState("");
-  const [image, setImage] = useState(null);
+  // const [image, setImage] = useState(null);
   const [requiredFieldsFilled, setRequiredFieldsFilled] = useState(false);
   const { theme, themes, toggleTheme } = useTheme();
   const currentTheme = themes[theme];
@@ -38,7 +38,11 @@ const Report = ({ route }) => {
 
     if (latitudeFromMap && longitudeFromMap && Address) {
       setCoordinates(`${latitudeFromMap}, ${longitudeFromMap}`);
-      setLocation(Address);
+      setFullLocationAddress(Address);
+
+      const [streetAddress, city] = Address.split(", ");
+      setLocation({ streetAddress, city });
+      // setLocation(Address);
     }
   }, [route.params]); // Run only when route.params changes
 
@@ -60,22 +64,25 @@ const Report = ({ route }) => {
 
   // Clear all fields after successful submission
   const handleSuccess = () => {
-    setLocation("");
+    // setLocation("");
+    setLocation({ streetAddress: "", city: "" });
+
     setCoordinates("");
     setDetails("");
     setDescription("");
-    setImage(null);
-    setRequiredFieldsFilled(false); // Reset requiredFieldsFilled state
+    // setImage(null);
+    setRequiredFieldsFilled(false);
+    setFullLocationAddress("");
   };
 
   const handleSubmit = async () => {
-    //API call later
+    const locationAsString = `${location.streetAddress}, ${location.city}`;
 
     let coords = coordinates;
 
     if (coords === "") {
       try {
-        const response = await geocode(location);
+        const response = await geocode(locationAsString);
 
         if (!response || !response.features || response.features.length === 0) {
           throw new Error("No features found in geocode response");
@@ -89,7 +96,7 @@ const Report = ({ route }) => {
         coords = `${feature.properties.coordinates.latitude}, ${feature.properties.coordinates.longitude}`;
         console.log(
           "REPORT SUBMIT-- Full Address: ",
-          location,
+          locationAsString,
           "Coordinates: ",
           coords
         );
@@ -119,7 +126,7 @@ const Report = ({ route }) => {
           description: description,
           details: details,
           coordinates: coords,
-          address: location,
+          address: fullLocationAddress ? fullLocationAddress : locationAsString, // If fullLocationAddress is set from map use that, else use the address from the form
         },
         {
           headers: {
@@ -141,7 +148,12 @@ const Report = ({ route }) => {
 
   // Check if the required fields are filled out
   const checkRequiredFields = () => {
-    if (location !== "" && details !== "" && description !== "") {
+    if (
+      location.streetAddress !== "" &&
+      location.city !== "" &&
+      details !== "" &&
+      description !== ""
+    ) {
       setRequiredFieldsFilled(true);
     } else {
       setRequiredFieldsFilled(false);
@@ -150,7 +162,6 @@ const Report = ({ route }) => {
 
   return (
     <KeyboardAvoidingView
-      // behavior={Platform.OS === "ios" ? "padding" : "height"}
       style={[
         styles.container,
         { backgroundColor: currentTheme.backgroundColor },
@@ -173,23 +184,40 @@ const Report = ({ route }) => {
           <View style={styles.customTextInputComponent.textInputContainer}>
             <ThemedText>
               <Text style={styles.customTextInputComponent.asterisk}>*</Text>{" "}
-              indicates required fields.
+              Indicates required fields.
             </ThemedText>
-            <ThemedText>Uploading an image is optional.</ThemedText>
+            {/* <ThemedText>Uploading an image is optional.</ThemedText> */}
           </View>
           <CustomTextInput
-            placeholder="Location"
-            title="Location:"
+            placeholder="Example: 123 Main St."
+            title="Street Address:"
             required={true}
-            onChangeText={setLocation}
-            checkRequiredFields={checkRequiredFields}
-            value={location}
+            onChangeText={(text) => {
+              setLocation({ ...location, streetAddress: text });
+              checkRequiredFields();
+            }}
+            // checkRequiredFields={checkRequiredFields}
+            value={location.streetAddress}
+          />
+          <CustomTextInput
+            placeholder="Example: Waterloo"
+            title="City:"
+            required={true}
+            onChangeText={(text) => {
+              setLocation({ ...location, city: text });
+              checkRequiredFields();
+            }}
+            // checkRequiredFields={checkRequiredFields}
+            value={location.city}
           />
           <CustomTextInput
             placeholder="Example: In the middle of a lane, near the curb, etc."
             title="Additional Pothole Location Details:"
             required={true}
-            onChangeText={setDetails}
+            onChangeText={(text) => {
+              setDetails(text);
+              checkRequiredFields();
+            }}
             checkRequiredFields={checkRequiredFields}
             value={details}
           />
@@ -197,8 +225,11 @@ const Report = ({ route }) => {
             placeholder="Example: Large, shallow and round"
             title="Pothole Description:"
             required={true}
-            onChangeText={setDescription}
-            checkRequiredFields={checkRequiredFields}
+            onChangeText={(text) => {
+              setDescription(text);
+              checkRequiredFields();
+            }}
+            // checkRequiredFields={checkRequiredFields}
             value={description}
           />
           <View style={styles.imageContainer}>
@@ -218,7 +249,6 @@ const Report = ({ route }) => {
     </KeyboardAvoidingView>
   );
 };
-
 // Component for text inputs
 const CustomTextInput = (props) => {
   return (
@@ -238,7 +268,7 @@ const CustomTextInput = (props) => {
           props.onChangeText(text);
           // props.checkRequiredFields();
         }}
-        onEndEditing={(e) => props.checkRequiredFields()}
+        // onEndEditing={(e) => props.checkRequiredFields()}
         value={props.value}
       ></TextInput>
     </View>
