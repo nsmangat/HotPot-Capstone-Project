@@ -161,92 +161,101 @@ const Report = ({ route }) => {
   };
 
   return (
-    <KeyboardAvoidingView
+    <View
       style={[
-        styles.container,
+        styles.headerContainer,
         { backgroundColor: currentTheme.backgroundColor },
       ]}
     >
-      <ScrollView
-        contentContainerStyle={[
-          styles.scrollView,
+      <ScreenTitle name="file-document" title="Report a Pothole" />
+
+      <KeyboardAvoidingView
+        style={[
+          styles.container,
           { backgroundColor: currentTheme.backgroundColor },
         ]}
-        keyboardShouldPersistTaps="handled"
       >
-        <View
-          style={[
-            styles.pageView,
+        <ScrollView
+          contentContainerStyle={[
+            styles.scrollView,
             { backgroundColor: currentTheme.backgroundColor },
           ]}
+          keyboardShouldPersistTaps="handled"
         >
-          <ScreenTitle name="file-document" title="Report a Pothole" />
-          <View style={styles.customTextInputComponent.textInputContainer}>
-            <ThemedText>
-              <Text style={styles.customTextInputComponent.asterisk}>*</Text>{" "}
-              Indicates required fields.
-            </ThemedText>
-            {/* <ThemedText>Uploading an image is optional.</ThemedText> */}
-          </View>
-          <CustomTextInput
-            placeholder="Example: 123 Main St."
-            title="Street Address:"
-            required={true}
-            onChangeText={(text) => {
-              setLocation({ ...location, streetAddress: text });
-              checkRequiredFields();
-            }}
-            // checkRequiredFields={checkRequiredFields}
-            value={location.streetAddress}
-          />
-          <CustomTextInput
-            placeholder="Example: Waterloo"
-            title="City:"
-            required={true}
-            onChangeText={(text) => {
-              setLocation({ ...location, city: text });
-              checkRequiredFields();
-            }}
-            // checkRequiredFields={checkRequiredFields}
-            value={location.city}
-          />
-          <CustomTextInput
-            placeholder="Example: In the middle of a lane, near the curb, etc."
-            title="Additional Pothole Location Details:"
-            required={true}
-            onChangeText={(text) => {
-              setDetails(text);
-              checkRequiredFields();
-            }}
-            checkRequiredFields={checkRequiredFields}
-            value={details}
-          />
-          <CustomTextInput
-            placeholder="Example: Large, shallow and round"
-            title="Pothole Description:"
-            required={true}
-            onChangeText={(text) => {
-              setDescription(text);
-              checkRequiredFields();
-            }}
-            // checkRequiredFields={checkRequiredFields}
-            value={description}
-          />
-          <View style={styles.imageContainer}>
-            <CustomButton
-              title="Submit"
-              onPress={handleSubmit}
-              disabled={!requiredFieldsFilled}
-              style={
-                requiredFieldsFilled
-                  ? styles.submitButton
-                  : styles.disabledButton
-              }
+          <View
+            style={[
+              styles.pageView,
+              { backgroundColor: currentTheme.backgroundColor },
+            ]}
+          >
+            {/* <ScreenTitle name="file-document" title="Report a Pothole" /> */}
+            <View style={styles.customTextInputComponent.textInputContainer}>
+              <ThemedText>
+                <Text style={styles.customTextInputComponent.asterisk}>*</Text>{" "}
+                Indicates required fields.
+              </ThemedText>
+              {/* <ThemedText>Uploading an image is optional.</ThemedText> */}
+            </View>
+            <CustomTextInput
+              placeholder="Example: 123 Main St."
+              title="Street Address:"
+              required={true}
+              onChangeText={(text) => {
+                setLocation({ ...location, streetAddress: text });
+                checkRequiredFields();
+              }}
+              // checkRequiredFields={checkRequiredFields}
+              value={location.streetAddress}
             />
+            <CustomTextInput
+              placeholder="Example: Waterloo"
+              title="City:"
+              required={true}
+              onChangeText={(text) => {
+                setLocation({ ...location, city: text });
+                checkRequiredFields();
+              }}
+              // checkRequiredFields={checkRequiredFields}
+              value={location.city}
+            />
+            <CustomTextInput
+              placeholder="Example: In the middle of a lane, near the curb, etc."
+              title="Additional Pothole Location Details:"
+              required={true}
+              onChangeText={(text) => {
+                setDetails(text);
+                checkRequiredFields();
+              }}
+              checkRequiredFields={checkRequiredFields}
+              value={details}
+            />
+            <CustomTextInput
+              placeholder="Example: Large, shallow and round"
+              title="Pothole Description:"
+              required={true}
+              onChangeText={(text) => {
+                setDescription(text);
+                checkRequiredFields();
+              }}
+              // checkRequiredFields={checkRequiredFields}
+              value={description}
+            />
+            <View style={styles.imageContainer}>
+              <CustomButton
+                title="Submit"
+                onPress={handleSubmit}
+                disabled={!requiredFieldsFilled}
+                style={
+                  requiredFieldsFilled
+                    ? styles.submitButton
+                    : styles.disabledButton
+                }
+              />
+            </View>
           </View>
-        </View>
-      </ScrollView>
-    </KeyboardAvoidingView>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </View>
   );
 };
 // Component for text inputs
@@ -294,24 +303,24 @@ const styles = StyleSheet.create({
   pageView: {
     flex: 1,
     padding: width * 0.03,
-    paddingTop: height * 0.1,
+    paddingTop: height * 0.001, //for text fields content i.e. move it up or down basically
     paddingBottom: height * 0.25,
   },
-  image: {
-    width: "85%",
-    height: "40%",
-    marginTop: 10,
-  },
-  imageContainer: {
-    alignItems: "center",
-    marginBottom: 10,
-  },
-  imageButton: {
-    backgroundColor: "#0C9479",
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    borderRadius: 10,
-  },
+  // image: {
+  //   width: "85%",
+  //   height: "40%",
+  //   marginTop: 10,
+  // },
+  // imageContainer: {
+  //   alignItems: "center",
+  //   marginBottom: 10,
+  // },
+  // imageButton: {
+  //   backgroundColor: "#0C9479",
+  //   paddingHorizontal: 20,
+  //   paddingVertical: 10,
+  //   borderRadius: 10,
+  // },
   submitButton: {
     backgroundColor: "#1C6758",
     paddingHorizontal: width * 0.3,
@@ -353,6 +362,12 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     alignSelf: "center",
     marginTop: height * 0.02,
+  },
+  //Added this to prevent title being in safe view area
+  headerContainer: {
+    backgroundColor: "#D9E9E6",
+    paddingHorizontal: width * 0.03,
+    paddingVertical: height * 0.07,
   },
 });
 
