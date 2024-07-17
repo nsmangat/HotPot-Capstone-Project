@@ -4,13 +4,14 @@ import {
   TextInput,
   StyleSheet,
   View,
-  Image,
   TouchableOpacity,
   Dimensions,
   Alert,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
-import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { useTheme } from "../components/themeContext";
 import ThemedText from "../components/themeText";
 import ScreenTitle from "../components/header";
@@ -19,12 +20,14 @@ import { getData } from "../utils/storage";
 import { useEffect } from "react";
 import { geocode } from "../utils/mapbox/geocodeService.js";
 
-const Report = ({route}) => {
-  const [location, setLocation] = useState("");
+const Report = ({ route }) => {
+  // const [location, setLocation] = useState("");
+  const [fullLocationAddress, setFullLocationAddress] = useState("");
+  const [location, setLocation] = useState({ streetAddress: "", city: "" });
   const [coordinates, setCoordinates] = useState("");
   const [details, setDetails] = useState("");
   const [description, setDescription] = useState("");
-  const [image, setImage] = useState(null);
+  // const [image, setImage] = useState(null);
   const [requiredFieldsFilled, setRequiredFieldsFilled] = useState(false);
   const { theme, themes, toggleTheme } = useTheme();
   const currentTheme = themes[theme];
@@ -35,13 +38,17 @@ const Report = ({route}) => {
 
     if (latitudeFromMap && longitudeFromMap && Address) {
       setCoordinates(`${latitudeFromMap}, ${longitudeFromMap}`);
-      setLocation(Address);
+      setFullLocationAddress(Address);
+
+      const [streetAddress, city] = Address.split(", ");
+      setLocation({ streetAddress, city });
+      // setLocation(Address);
     }
   }, [route.params]); // Run only when route.params changes
 
-  //console.log("REPORT -- Full Address: ", location, "Coordinates: ", coordinates);  
+  //console.log("REPORT -- Full Address: ", location, "Coordinates: ", coordinates);
 
-  // For uploading image
+  // For uploading image, not using this anymore
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
@@ -57,42 +64,48 @@ const Report = ({route}) => {
 
   // Clear all fields after successful submission
   const handleSuccess = () => {
-    setLocation("");
+    // setLocation("");
+    setLocation({ streetAddress: "", city: "" });
+
     setCoordinates("");
     setDetails("");
     setDescription("");
-    setImage(null);
-    setRequiredFieldsFilled(false); // Reset requiredFieldsFilled state
+    // setImage(null);
+    setRequiredFieldsFilled(false);
+    setFullLocationAddress("");
   };
 
   const handleSubmit = async () => {
-    //API call later
+    const locationAsString = `${location.streetAddress}, ${location.city}`;
 
     let coords = coordinates;
-    
+
     if (coords === "") {
       try {
-        const response = await geocode(location);
-  
+        const response = await geocode(locationAsString);
+
         if (!response || !response.features || response.features.length === 0) {
           throw new Error("No features found in geocode response");
         }
-  
+
         const feature = response.features[0];
         if (!feature.properties || !feature.properties.coordinates) {
           throw new Error("Invalid feature structure in geocode response");
         }
-  
+
         coords = `${feature.properties.coordinates.latitude}, ${feature.properties.coordinates.longitude}`;
-        console.log("REPORT SUBMIT-- Full Address: ", location, "Coordinates: ", coords);
+        console.log(
+          "REPORT SUBMIT-- Full Address: ",
+          locationAsString,
+          "Coordinates: ",
+          coords
+        );
       } catch (error) {
         console.error("Error during geocoding:", error);
         Alert.alert("Error", "Unable to fetch coordinates. Please try again.");
         return;
       }
     }
-
-
 
     if (!requiredFieldsFilled) {
       Alert.alert(
@@ -113,7 +126,7 @@ const Report = ({route}) => {
           description: description,
           details: details,
           coordinates: coords,
-          address: location,
+          address: fullLocationAddress ? fullLocationAddress : locationAsString, // If fullLocationAddress is set from map use that, else use the address from the form
         },
         {
           headers: {
@@ -135,7 +148,12 @@ const Report = ({route}) => {
 
   // Check if the required fields are filled out
   const checkRequiredFields = () => {
-    if (location !== "" && details !== "" && description !== "") {
+    if (
+      location.streetAddress !== "" &&
+      location.city !== "" &&
+      details !== "" &&
+      description !== ""
+    ) {
       setRequiredFieldsFilled(true);
     } else {
       setRequiredFieldsFilled(false);
@@ -145,65 +163,102 @@ const Report = ({route}) => {
   return (
     <View
       style={[
-        styles.pageView,
-        ,
+        styles.headerContainer,
         { backgroundColor: currentTheme.backgroundColor },
       ]}
     >
       <ScreenTitle name="file-document" title="Report a Pothole" />
-      <View style={styles.customTextInputComponent.textInputContainer}>
-        <ThemedText>
-          <Text style={styles.customTextInputComponent.asterisk}>*</Text>{" "}
-          indicates required fields.
-        </ThemedText>
-        <ThemedText>Uploading an image is optional.</ThemedText>
-      </View>
-      <CustomTextInput
-        placeholder="Location"
-        title="Location:"
-        required={true}
-        onChangeText={setLocation}
-        checkRequiredFields={checkRequiredFields}
-        value={location}
-      />
-      <CustomTextInput
-        placeholder="Example: In the middle of a lane, near the curb, ect."
-        title="Additional Pothole Location Details:"
-        required={true}
-        onChangeText={setDetails}
-        checkRequiredFields={checkRequiredFields}
-        value={details}
-      />
-      <CustomTextInput
-        placeholder="Example: Large, shallow and round"
-        title="Pothole Description:"
-        required={true}
-        onChangeText={setDescription}
-        checkRequiredFields={checkRequiredFields}
-        value={description}
-      />
-      <View style={styles.imageContainer}>
-        {/* <TouchableOpacity style={styles.imageButton} onPress={pickImage}>
-          <Text style={{ color: "white" }}>Upload Image</Text>
-        </TouchableOpacity> */}
-        <CustomButton
-          title="Upload Image"
-          onPress={pickImage}
-          style={styles.imageButton}
-        />
-        {image && <Image source={{ uri: image }} style={styles.image} />}
-        {requiredFieldsFilled && (
-          <CustomButton
-            title="Submit"
-            onPress={handleSubmit}
-            style={styles.submitButton}
-          />
-        )}
-      </View>
+      <KeyboardAvoidingView
+        style={[
+          styles.container,
+          { backgroundColor: currentTheme.backgroundColor },
+        ]}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        keyboardVerticalOffset={0}
+      >
+        <ScrollView
+          contentContainerStyle={[
+            styles.scrollView,
+            { backgroundColor: currentTheme.backgroundColor },
+          ]}
+          keyboardShouldPersistTaps="handled"
+        >
+          <View
+            style={[
+              styles.pageView,
+              { backgroundColor: currentTheme.backgroundColor },
+            ]}
+          >
+            {/* <ScreenTitle name="file-document" title="Report a Pothole" /> */}
+            <View style={styles.customTextInputComponent.textInputContainer}>
+              <ThemedText>
+                <Text style={styles.customTextInputComponent.asterisk}>*</Text>{" "}
+                Indicates required fields.
+              </ThemedText>
+              {/* <ThemedText>Uploading an image is optional.</ThemedText> */}
+            </View>
+            <CustomTextInput
+              placeholder="Example: 123 Main St."
+              title="Street Address:"
+              required={true}
+              onChangeText={(text) => {
+                setLocation({ ...location, streetAddress: text });
+                checkRequiredFields();
+              }}
+              // checkRequiredFields={checkRequiredFields}
+              value={location.streetAddress}
+            />
+            <CustomTextInput
+              placeholder="Example: Waterloo"
+              title="City:"
+              required={true}
+              onChangeText={(text) => {
+                setLocation({ ...location, city: text });
+                checkRequiredFields();
+              }}
+              // checkRequiredFields={checkRequiredFields}
+              value={location.city}
+            />
+            <CustomTextInput
+              placeholder="Example: In the middle of a lane, near the curb, etc."
+              title="Additional Pothole Location Details:"
+              required={true}
+              onChangeText={(text) => {
+                setDetails(text);
+                checkRequiredFields();
+              }}
+              checkRequiredFields={checkRequiredFields}
+              value={details}
+            />
+            <CustomTextInput
+              placeholder="Example: Large, shallow and round"
+              title="Pothole Description:"
+              required={true}
+              onChangeText={(text) => {
+                setDescription(text);
+                checkRequiredFields();
+              }}
+              // checkRequiredFields={checkRequiredFields}
+              value={description}
+            />
+            <View style={styles.imageContainer}>
+              <CustomButton
+                title="Submit"
+                onPress={handleSubmit}
+                disabled={!requiredFieldsFilled}
+                style={
+                  requiredFieldsFilled
+                    ? styles.submitButton
+                    : styles.disabledButton
+                }
+              />
+            </View>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </View>
   );
 };
-
 // Component for text inputs
 const CustomTextInput = (props) => {
   return (
@@ -223,7 +278,7 @@ const CustomTextInput = (props) => {
           props.onChangeText(text);
           // props.checkRequiredFields();
         }}
-        onEndEditing={(e) => props.checkRequiredFields()}
+        // onEndEditing={(e) => props.checkRequiredFields()}
         value={props.value}
       ></TextInput>
     </View>
@@ -231,9 +286,13 @@ const CustomTextInput = (props) => {
 };
 
 // Component for buttons
-const CustomButton = ({ title, onPress, style }) => {
+const CustomButton = ({ title, onPress, style, disabled }) => {
   return (
-    <TouchableOpacity style={[styles.button, style]} onPress={onPress}>
+    <TouchableOpacity
+      style={[styles.button, style]}
+      onPress={onPress}
+      disabled={disabled}
+    >
       <Text style={styles.buttonText}>{title}</Text>
     </TouchableOpacity>
   );
@@ -245,24 +304,24 @@ const styles = StyleSheet.create({
   pageView: {
     flex: 1,
     padding: width * 0.03,
-    paddingTop: height * 0.1,
-    paddingBottom: height * 0.12,
+    paddingTop: height * 0.001, //for text fields content i.e. move it up or down basically
+    paddingBottom: height * 0.25,
   },
-  image: {
-    width: "85%",
-    height: "40%",
-    marginTop: 10,
-  },
-  imageContainer: {
-    alignItems: "center",
-    marginBottom: 10,
-  },
-  imageButton: {
-    backgroundColor: "#0C9479",
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    borderRadius: 10,
-  },
+  // image: {
+  //   width: "85%",
+  //   height: "40%",
+  //   marginTop: 10,
+  // },
+  // imageContainer: {
+  //   alignItems: "center",
+  //   marginBottom: 10,
+  // },
+  // imageButton: {
+  //   backgroundColor: "#0C9479",
+  //   paddingHorizontal: 20,
+  //   paddingVertical: 10,
+  //   borderRadius: 10,
+  // },
   submitButton: {
     backgroundColor: "#1C6758",
     paddingHorizontal: width * 0.3,
@@ -296,6 +355,20 @@ const styles = StyleSheet.create({
     asterisk: {
       color: "red",
     },
+  },
+  disabledButton: {
+    backgroundColor: "#808080",
+    paddingHorizontal: width * 0.3,
+    paddingVertical: height * 0.02,
+    borderRadius: 10,
+    alignSelf: "center",
+    marginTop: height * 0.02,
+  },
+  //Added this to prevent title being in safe view area
+  headerContainer: {
+    backgroundColor: "#D9E9E6",
+    paddingHorizontal: width * 0.03,
+    paddingVertical: height * 0.07,
   },
 });
 
