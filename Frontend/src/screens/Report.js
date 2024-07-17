@@ -168,12 +168,13 @@ const Report = ({ route }) => {
       ]}
     >
       <ScreenTitle name="file-document" title="Report a Pothole" />
-
       <KeyboardAvoidingView
         style={[
           styles.container,
           { backgroundColor: currentTheme.backgroundColor },
         ]}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        keyboardVerticalOffset={0}
       >
         <ScrollView
           contentContainerStyle={[
