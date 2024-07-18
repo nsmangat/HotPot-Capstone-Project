@@ -130,8 +130,9 @@ const Map = ({ navigation }) => {
                 <View style={{ flexDirection: 'column', alignItems: 'center', flexWrap: 'wrap'  }}>
                   <Text style={{ fontWeight: 'bold' }}>Location: {marker.Address.split(',')[0] + ',' + marker.Address.split(',')[1]}</Text>
                   <Text>Size: {marker.Size}</Text>
-                  <Text>First Reported Date: {new Date(marker.FirstReported).toLocaleString('en-US', { date: 'short', time: 'short' })}</Text>
                   <Text>Number of Reports: {marker.NumberOfReports}</Text>
+                  <Text>First Reported Date: {new Date(marker.FirstReported).toLocaleString('en-US', { dateStyle: 'long', timeZone: 'UTC' })}</Text>                  
+                  <Text>Estimated Fix Date: {new Date(marker.EstimatedFixDate).toLocaleString('en-US', { dateStyle: 'long', timeZone: 'UTC' })}</Text>
                 </View>
               </Callout>
             </Marker>
