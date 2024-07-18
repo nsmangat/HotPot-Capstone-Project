@@ -14,7 +14,7 @@ import ScreenTitle from "../components/header";
 import axios from "axios";
 import { useFocusEffect } from "@react-navigation/native";
 import { getData } from "../utils/storage";
-import ImageViewer from "react-native-image-zoom-viewer";
+// import ImageViewer from "react-native-image-zoom-viewer";
 
 const DataVisualizations = () => {
   const { theme, themes, toggleTheme } = useTheme();
@@ -35,7 +35,7 @@ const DataVisualizations = () => {
     setLoading(true);
     try {
       const response = await axios.get(
-        `http://${process.env.EXPO_PUBLIC_IP_ADDRESS}:5000/visualize`,
+        `http://${process.env.EXPO_PUBLIC_IP_ADDRESS}:5001/visualize`,
         {
           headers: {
             Authorization: `Bearer ${bearerToken}`,
@@ -59,213 +59,169 @@ const DataVisualizations = () => {
 
   //view without zooming in and out
 
-  //   return (
-  //     <View
-  //       style={[
-  //         styles.pageView,
-  //         { backgroundColor: currentTheme.backgroundColor },
-  //       ]}
-  //     >
-  //       <ScreenTitle name="chart-areaspline" title="Data Visualizations" />
-  //       <ScrollView horizontal={false} style={styles.scrollView}>
-  //         {loading ? (
-  //           <ActivityIndicator size="large" color={currentTheme.primaryColor} />
-  //         ) : (
-  //           <>
-  //             {images.global_pothole_count_line_graph && (
-  //               <ImageViewer
-  //                 key="global_pothole_count_line_graph"
-  //                 imageUrls={[
-  //                   {
-  //                     url: `data:image/png;base64,${images.global_pothole_count_line_graph}`,
-  //                   },
-  //                 ]}
-  //                 style={styles.retrievedImage}
-  //                 enableSwipeDown={false}
-  //                 enablePreload={true}
-  //                 enableScale={true}
-  //                 doubleClickInterval={300}
-  //                 maxOverflow={0}
-  //                 enablePanning={false}
-  //                 backgroundColor="transparent"
-  //                 renderIndicator={() => null}
-  //               />
-  //             )}
-  //             {images.global_fixed_vs_unfixed_pie_chart && (
-  //               <ImageViewer
-  //                 key="global_fixed_vs_unfixed_pie_chart"
-  //                 imageUrls={[
-  //                   {
-  //                     url: `data:image/png;base64,${images.global_fixed_vs_unfixed_pie_chart}`,
-  //                   },
-  //                 ]}
-  //                 style={styles.retrievedImage}
-  //                 enableSwipeDown={false}
-  //                 enablePreload={true}
-  //                 enableScale={true}
-  //                 doubleClickInterval={300}
-  //                 maxOverflow={0}
-  //                 enablePanning={false}
-  //                 backgroundColor="transparent"
-  //                 renderIndicator={() => null}
-  //               />
-  //             )}
-  //             {images.user_pothole_count_line_graph && (
-  //               <ImageViewer
-  //                 key="user_pothole_count_line_graph"
-  //                 imageUrls={[
-  //                   {
-  //                     url: `data:image/png;base64,${images.user_pothole_count_line_graph}`,
-  //                   },
-  //                 ]}
-  //                 style={styles.retrievedImage}
-  //                 enableSwipeDown={false}
-  //                 enablePreload={true}
-  //                 enableScale={true}
-  //                 doubleClickInterval={300}
-  //                 maxOverflow={0}
-  //                 enablePanning={false}
-  //                 backgroundColor="transparent"
-  //                 renderIndicator={() => null}
-  //               />
-  //             )}
-  //             {images.user_fixed_vs_unfixed_pie_chart && (
-  //               <ImageViewer
-  //                 key="user_fixed_vs_unfixed_pie_chart"
-  //                 imageUrls={[
-  //                   {
-  //                     url: `data:image/png;base64,${images.user_fixed_vs_unfixed_pie_chart}`,
-  //                   },
-  //                 ]}
-  //                 style={styles.retrievedImage}
-  //                 enableSwipeDown={false}
-  //                 enablePreload={true}
-  //                 enableScale={true}
-  //                 doubleClickInterval={300}
-  //                 maxOverflow={0}
-  //                 enablePanning={false}
-  //                 backgroundColor="transparent"
-  //                 renderIndicator={() => null}
-  //               />
-  //             )}
-  //           </>
-  //         )}
-  //       </ScrollView>
-  //     </View>
-  //   );
-  // };
-
-  //View with zooming in and out
   return (
-    <TouchableWithoutFeedback onPress={() => null}>
-      <ScrollView
-        style={[
-          styles.pageView,
-          { backgroundColor: currentTheme.backgroundColor },
-        ]}
-        contentContainerStyle={styles.scrollViewContent}
-      >
-        <ScreenTitle name="chart-areaspline" title="Data Visualizations" />
-        <View style={styles.imageContainer}>
-          {loading ? (
-            <ActivityIndicator
-              size="large"
-              color={currentTheme.primaryColor}
-              style={styles.loadingIndicator}
-            />
-          ) : (
-            <>
-              {images.global_pothole_count_line_graph && (
-                <ImageViewer
-                  key="global_pothole_count_line_graph"
-                  imageUrls={[
-                    {
-                      url: `data:image/png;base64,${images.global_pothole_count_line_graph}`,
-                    },
-                  ]}
-                  style={styles.retrievedImage}
-                  enableSwipeDown={false} //Added these props to disable bunch of the default stuff for ImageViewer
-                  enablePreload={true}
-                  enableScale={true}
-                  doubleClickInterval={300}
-                  maxOverflow={0}
-                  enablePanning={false}
-                  backgroundColor="transparent"
-                  renderIndicator={() => null}
-                  menu={null}
-                  saveToLocalByLongPress={false}
-                />
-              )}
-              {images.global_fixed_vs_unfixed_pie_chart && (
-                <ImageViewer
-                  key="global_fixed_vs_unfixed_pie_chart"
-                  imageUrls={[
-                    {
-                      url: `data:image/png;base64,${images.global_fixed_vs_unfixed_pie_chart}`,
-                    },
-                  ]}
-                  style={styles.retrievedImage}
-                  enableSwipeDown={false}
-                  enablePreload={true}
-                  enableScale={true}
-                  doubleClickInterval={300}
-                  maxOverflow={0}
-                  enablePanning={false}
-                  backgroundColor="transparent"
-                  renderIndicator={() => null}
-                  menu={null}
-                  saveToLocalByLongPress={false}
-                />
-              )}
-              {images.user_pothole_count_line_graph && (
-                <ImageViewer
-                  key="user_pothole_count_line_graph"
-                  imageUrls={[
-                    {
-                      url: `data:image/png;base64,${images.user_pothole_count_line_graph}`,
-                    },
-                  ]}
-                  style={styles.retrievedImage}
-                  enableSwipeDown={false}
-                  enablePreload={true}
-                  enableScale={true}
-                  doubleClickInterval={300}
-                  maxOverflow={0}
-                  enablePanning={false}
-                  backgroundColor="transparent"
-                  renderIndicator={() => null}
-                  menu={null}
-                  saveToLocalByLongPress={false}
-                />
-              )}
-              {images.user_fixed_vs_unfixed_pie_chart && (
-                <ImageViewer
-                  key="user_fixed_vs_unfixed_pie_chart"
-                  imageUrls={[
-                    {
-                      url: `data:image/png;base64,${images.user_fixed_vs_unfixed_pie_chart}`,
-                    },
-                  ]}
-                  style={styles.retrievedImage}
-                  enableSwipeDown={false}
-                  enablePreload={true}
-                  enableScale={true}
-                  doubleClickInterval={300}
-                  maxOverflow={0}
-                  enablePanning={false}
-                  backgroundColor="transparent"
-                  renderIndicator={() => null}
-                  menu={null} // Disable the menu completely
-                  saveToLocalByLongPress={false}
-                />
-              )}
-            </>
-          )}
-        </View>
+    <View
+      style={[
+        styles.pageView,
+        { backgroundColor: currentTheme.backgroundColor },
+      ]}
+    >
+      <ScreenTitle name="chart-areaspline" title="Data Visualizations" />
+      <ScrollView horizontal={false} style={styles.scrollView}>
+        {loading ? (
+          <ActivityIndicator size="large" color={currentTheme.primaryColor} />
+        ) : (
+          <>
+            {images.global_pothole_count_line_graph && (
+              <Image
+                source={{
+                  uri: `data:image/png;base64,${images.global_pothole_count_line_graph}`,
+                }}
+                style={styles.retrievedImage}
+              />
+            )}
+            {images.global_fixed_vs_unfixed_pie_chart && (
+              <Image
+                source={{
+                  uri: `data:image/png;base64,${images.global_fixed_vs_unfixed_pie_chart}`,
+                }}
+                style={styles.retrievedImage}
+              />
+            )}
+            {images.user_pothole_count_line_graph && (
+              <Image
+                source={{
+                  uri: `data:image/png;base64,${images.user_pothole_count_line_graph}`,
+                }}
+                style={styles.retrievedImage}
+              />
+            )}
+            {images.user_fixed_vs_unfixed_pie_chart && (
+              <Image
+                source={{
+                  uri: `data:image/png;base64,${images.user_fixed_vs_unfixed_pie_chart}`,
+                }}
+                style={styles.retrievedImage}
+              />
+            )}
+          </>
+        )}
       </ScrollView>
-    </TouchableWithoutFeedback>
+    </View>
   );
 };
+
+//View with zooming in and out
+//   return (
+//     <TouchableWithoutFeedback onPress={() => null}>
+//       <ScrollView
+//         style={[
+//           styles.pageView,
+//           { backgroundColor: currentTheme.backgroundColor },
+//         ]}
+//         contentContainerStyle={styles.scrollViewContent}
+//       >
+//         <ScreenTitle name="chart-areaspline" title="Data Visualizations" />
+//         <View style={styles.imageContainer}>
+//           {loading ? (
+//             <ActivityIndicator
+//               size="large"
+//               color={currentTheme.primaryColor}
+//               style={styles.loadingIndicator}
+//             />
+//           ) : (
+//             <>
+//               {images.global_pothole_count_line_graph && (
+//                 <ImageViewer
+//                   key="global_pothole_count_line_graph"
+//                   imageUrls={[
+//                     {
+//                       url: `data:image/png;base64,${images.global_pothole_count_line_graph}`,
+//                     },
+//                   ]}
+//                   style={styles.retrievedImage}
+//                   enableSwipeDown={false} //Added these props to disable bunch of the default stuff for ImageViewer
+//                   enablePreload={true}
+//                   enableScale={true}
+//                   doubleClickInterval={300}
+//                   maxOverflow={0}
+//                   enablePanning={false}
+//                   backgroundColor="transparent"
+//                   renderIndicator={() => null}
+//                   menu={null}
+//                   saveToLocalByLongPress={false}
+//                 />
+//               )}
+//               {images.global_fixed_vs_unfixed_pie_chart && (
+//                 <ImageViewer
+//                   key="global_fixed_vs_unfixed_pie_chart"
+//                   imageUrls={[
+//                     {
+//                       url: `data:image/png;base64,${images.global_fixed_vs_unfixed_pie_chart}`,
+//                     },
+//                   ]}
+//                   style={styles.retrievedImage}
+//                   enableSwipeDown={false}
+//                   enablePreload={true}
+//                   enableScale={true}
+//                   doubleClickInterval={300}
+//                   maxOverflow={0}
+//                   enablePanning={false}
+//                   backgroundColor="transparent"
+//                   renderIndicator={() => null}
+//                   menu={null}
+//                   saveToLocalByLongPress={false}
+//                 />
+//               )}
+//               {images.user_pothole_count_line_graph && (
+//                 <ImageViewer
+//                   key="user_pothole_count_line_graph"
+//                   imageUrls={[
+//                     {
+//                       url: `data:image/png;base64,${images.user_pothole_count_line_graph}`,
+//                     },
+//                   ]}
+//                   style={styles.retrievedImage}
+//                   enableSwipeDown={false}
+//                   enablePreload={true}
+//                   enableScale={true}
+//                   doubleClickInterval={300}
+//                   maxOverflow={0}
+//                   enablePanning={false}
+//                   backgroundColor="transparent"
+//                   renderIndicator={() => null}
+//                   menu={null}
+//                   saveToLocalByLongPress={false}
+//                 />
+//               )}
+//               {images.user_fixed_vs_unfixed_pie_chart && (
+//                 <ImageViewer
+//                   key="user_fixed_vs_unfixed_pie_chart"
+//                   imageUrls={[
+//                     {
+//                       url: `data:image/png;base64,${images.user_fixed_vs_unfixed_pie_chart}`,
+//                     },
+//                   ]}
+//                   style={styles.retrievedImage}
+//                   enableSwipeDown={false}
+//                   enablePreload={true}
+//                   enableScale={true}
+//                   doubleClickInterval={300}
+//                   maxOverflow={0}
+//                   enablePanning={false}
+//                   backgroundColor="transparent"
+//                   renderIndicator={() => null}
+//                   menu={null} // Disable the menu completely
+//                   saveToLocalByLongPress={false}
+//                 />
+//               )}
+//             </>
+//           )}
+//         </View>
+//       </ScrollView>
+//     </TouchableWithoutFeedback>
+//   );
+// };
 
 const { width, height } = Dimensions.get("window");
 

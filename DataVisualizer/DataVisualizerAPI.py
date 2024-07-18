@@ -213,5 +213,5 @@ def visualize():
 
 
 if __name__ == '__main__':
-    # Might have to change port to not conflict with scraper?
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    
+    app.run(debug=True, host='0.0.0.0', port=5001)
