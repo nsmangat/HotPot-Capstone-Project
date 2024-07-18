@@ -21,6 +21,7 @@ async function getAllPotholes(firebaseUID) {
                 Address: pothole.dataValues.address,
                 NumberOfReports: pothole.dataValues.number_of_reports,
                 FirstReported: pothole.dataValues.first_reported_date,
+                EstimatedFixDate: pothole.dataValues.estimated_fix_date,
             };
         });
 
