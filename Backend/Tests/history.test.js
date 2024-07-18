@@ -1,11 +1,11 @@
 require("dotenv").config({ path: ".env.test" });
 const request = require("supertest");
 const server = require("../server");
-const { getUserReportHistory } = require("../routes/history");
+const { getUserReportHistory, deleteHistory } = require("../routes/historyService");
 const sequelize = require("../sequalize");
 const verifyToken = require("../firebase/authMiddleware");
 
-jest.mock("../routes/history");
+jest.mock("../routes/historyService");
 jest.mock("../firebase/authMiddleware", () =>
 jest.fn((req, res, next) => {
   req.user = { uid: "some-user-id" };
@@ -53,21 +53,21 @@ describe("GET /protected/history", () => {
       },
     ];
 
-    getUserReportHistory.create.mockResolvedValue(mockHistory);
+    getUserReportHistory.mockResolvedValue(mockHistory);
     const response = await request(server).get("/protected/history");
 
     expect(response.status).toBe(200);
     expect(response.body).toEqual([
       {
         description: "Pothole 1",
-        dateTime: new Date("2024-01-01T12:00:00Z"),
+        dateTime: "2024-01-01T12:00:00.000Z",
         is_fixed: true,
         address: "123 Street",
         size: "large",
       },
       {
         description: "Pothole 2",
-        dateTime: new Date("2024-01-02T12:00:00Z"),
+        dateTime: "2024-01-02T12:00:00.000Z",
         is_fixed: false,
         address: "456 Avenue",
         size: "small",
@@ -76,11 +76,40 @@ describe("GET /protected/history", () => {
   });
 
   it("should handle errors when fetching user report history", async () => {
-    getUserReportHistory.mockRejectedValue(new Error("Database error"));
+    getUserReportHistory.mockRejectedValue(new Error("DB Error"));
 
-    const res = await request(app).get("/protected/history");
+    const res = await request(server).get("/protected/history");
 
     expect(res.status).toBe(500);
     expect(res.text).toBe("Internal Server Error");
+  });
+});
+
+describe("DELETE /protected/history/:reported_time", () => {
+  it("should delete history successfully", async () => {
+    deleteHistory.mockResolvedValue(true);
+
+    const response = await request(server).delete("/protected/history/2024-01-01T12:00:00Z");
+
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual({ message: "Deleted history successfully!" });
+  });
+
+  it("should return 400 if history not found", async () => {
+    deleteHistory.mockResolvedValue(false);
+
+    const response = await request(server).delete("/protected/history/2024-01-01T12:00:00Z");
+
+    expect(response.status).toBe(400);
+    expect(response.body).toEqual({ message: "History not found." });
+  });
+
+  it("should handle errors when deleting history", async () => {
+    deleteHistory.mockRejectedValue(new Error("DB error"));
+
+    const response = await request(server).delete("/protected/history/2024-01-01T12:00:00Z");
+
+    expect(response.status).toBe(500);
+    expect(response.text).toBe("Internal Server Error");
   });
 });
