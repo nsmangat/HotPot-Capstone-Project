@@ -2,6 +2,7 @@ import { initializeApp } from 'firebase/app';
 import { getAuth, initializeAuth, getReactNativePersistence} from 'firebase/auth';
 import ReactNativeAsyncStorage from '@react-native-async-storage/async-storage';
 import { Platform } from 'react-native';
+import { storeData } from '../src/utils/storage';
 
 const firebaseConfig = {
   apiKey: Platform.OS === 'ios' ? process.env.EXPO_PUBLIC_API_KEY:process.env.EXPO_PUBLIC_API_KEY_ANDROID, 
@@ -13,9 +14,22 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
-//const auth = getAuth(app);
 const auth = initializeAuth(app, {
   persistence: getReactNativePersistence(ReactNativeAsyncStorage)
 });
+
+const refreshToken = async() => {
+  const user = auth.currentUser;
+  if(user){
+    try {
+      const idToken = await user.getIdToken(true);
+      await storeData('bearerToken', idToken);
+    } catch (error) {
+      console.error("Error refreshing token: ", error);
+    }
+  }
+}
+
+setInterval(refreshToken, 3480000); // 58 mins
 
 export { auth };

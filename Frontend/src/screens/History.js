@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useRef } from "react";
 import {
   View,
   StyleSheet,
@@ -25,6 +25,7 @@ const History = () => {
   const [history, setHistory] = useState([]);
   const [selectedItem, setSelectedItem] = useState(null);
   const [isHistoryDetailsVisible, setIsHistoryDetailsVisible] = useState(false);
+  const swipeableRef = useRef(null);
 
   const getHistory = async () => {
     try {
@@ -70,10 +71,17 @@ const History = () => {
 
       console.log(res.data);
       Alert.alert("Success", "Deleted successfully");
+      closeSwipable();
       getHistory();
     } catch (err) {
       console.error(err);
       Alert.alert("Failure", "Network error! Please try again later");
+    }
+  };
+
+  const closeSwipable = () => {
+    if (swipeableRef.current) {
+      swipeableRef.current.close();
     }
   };
 
@@ -82,19 +90,19 @@ const History = () => {
     const rightSwipeActions = () => {
       return (
         <TouchableOpacity onPress={() => deleteRow(item)}>
-          <Icon name="delete" size={width * 0.07} style={styles.deleteButton} />
+          <View style={styles.deleteButton}>
+            <Icon name="delete" size={width * 0.07} color="white" />
+          </View>
         </TouchableOpacity>
       );
     };
 
     return (
       <GestureHandlerRootView>
-        <Swipeable renderRightActions={rightSwipeActions}>
+        <Swipeable renderRightActions={rightSwipeActions} ref={swipeableRef}>
           <TouchableOpacity onPress={() => toggleDetailsVisible(item)}>
             <View style={styles.historyItem}>
-              <View>
-                <Icon name="circle" size={width * 0.054} color={status} />
-              </View>
+              <Icon name="circle" size={width * 0.054} color={status} />
               <View style={styles.historyCol}>
                 <ThemedText style={styles.text}>{item.address}</ThemedText>
                 <ThemedText style={styles.text}>{item.dateTime}</ThemedText>
@@ -118,31 +126,30 @@ const History = () => {
       ]}
     >
       <ScreenTitle name="history" title="Reports History" />
-      <View style={styles.list}>
-        <FlatList
-          data={history}
-          renderItem={renderHistoryRow}
-          keyExtractor={(item, index) => index.toString()}
-        />
-      </View>
+      <FlatList
+        data={history}
+        renderItem={renderHistoryRow}
+        keyExtractor={(item, index) => index.toString()}
+        contentContainerStyle={styles.list}
+      />
       <Modal
         visible={isHistoryDetailsVisible}
         transparent={true}
         onRequestClose={closeHistoryDetails}
       >
-        <BlurView intensity={20} style={styles.blurContainer}>
+        <BlurView intensity={50} style={styles.blurContainer}>
           <View style={styles.modalContainer}>
-            <ThemedText style={styles.title}>Report Details</ThemedText>
-            <ThemedText style={styles.text}>
+            <ThemedText style={styles.modalTitle}>Report Details</ThemedText>
+            <ThemedText style={styles.modalText}>
               Location: {selectedItem?.address}
             </ThemedText>
-            <ThemedText style={styles.text}>
+            <ThemedText style={styles.modalText}>
               Date Time: {selectedItem?.dateTime}
             </ThemedText>
-            <ThemedText style={styles.text}>
+            <ThemedText style={styles.modalText}>
               Description: This is description
             </ThemedText>
-            <ThemedText style={styles.text}>Size: Small</ThemedText>
+            <ThemedText style={styles.modalText}>Size: Small</ThemedText>
             <TouchableOpacity
               onPress={closeHistoryDetails}
               style={styles.closeButton}
@@ -161,45 +168,52 @@ const { width, height } = Dimensions.get("window");
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: width * 0.03,
-    paddingTop: height * 0.1,
-    paddingBottom: height * 0.12,
+    padding: width * 0.05,
+    paddingTop: height * 0.08,
   },
   itemContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: height * 0.04,
-    paddingHorizontal: width * 0.05,
-    alignItems: "left",
+    marginBottom: height * 0.02,
   },
   title: {
-    fontSize: width * 0.05,
+    fontSize: width * 0.045,
     fontWeight: "bold",
   },
   text: {
     fontSize: width * 0.04,
   },
   list: {
-    marginBottom: height * 0.05,
-    flexDirection: "row",
-    alignItems: "center",
-    marginLeft: width * 0.03,
+    paddingBottom: height * 0.1,
   },
   historyItem: {
-    alignItems: "left",
-    marginBottom: height * 0.02,
     flexDirection: "row",
-    maxWidth: width * 0.97,
+    alignItems: "center",
+    justifyContent: "space-between",
+    backgroundColor: "#f8f8f8",
+    padding: width * 0.04,
+    borderRadius: 10,
+    marginBottom: height * 0.015,
   },
-  historyCol: {},
+  historyCol: {
+    flex: 1,
+    marginLeft: width * 0.03,
+  },
   modalContainer: {
     backgroundColor: "white",
     padding: width * 0.05,
     borderRadius: 10,
     marginHorizontal: width * 0.05,
-    marginTop: height * 0.4,
-    alignItems: "left",
+    alignItems: "flex-start",
+  },
+  modalTitle: {
+    fontSize: width * 0.05,
+    fontWeight: "bold",
+    marginBottom: height * 0.02,
+  },
+  modalText: {
+    fontSize: width * 0.045,
+    marginBottom: height * 0.015,
   },
   closeButton: {
     position: "absolute",
@@ -208,11 +222,15 @@ const styles = StyleSheet.create({
   },
   blurContainer: {
     flex: 1,
-    overflow: "hidden",
+    justifyContent: "center",
   },
   deleteButton: {
     backgroundColor: "red",
-    color: "white",
+    justifyContent: "center",
+    alignItems: "center",
+    width: width * 0.15,
+    borderRadius: 10,
+    marginVertical: height * 0.03,
   },
 });
 
