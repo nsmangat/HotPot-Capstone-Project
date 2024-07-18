@@ -25,7 +25,7 @@ const History = () => {
   const [history, setHistory] = useState([]);
   const [selectedItem, setSelectedItem] = useState(null);
   const [isHistoryDetailsVisible, setIsHistoryDetailsVisible] = useState(false);
-  const swipeableRef = useRef(null);
+  const swipeableRefs = useRef(new Map());
 
   const getHistory = async () => {
     try {
@@ -71,7 +71,7 @@ const History = () => {
 
       console.log(res.data);
       Alert.alert("Success", "Deleted successfully");
-      closeSwipable();
+      closeSwipable(item.dateTime);
       getHistory();
     } catch (err) {
       console.error(err);
@@ -79,9 +79,10 @@ const History = () => {
     }
   };
 
-  const closeSwipable = () => {
-    if (swipeableRef.current) {
-      swipeableRef.current.close();
+  const closeSwipable = (key) => {
+    const swipeable = swipeableRefs.current.get(key);
+    if (swipeable) {
+      swipeable.close();
     }
   };
 
@@ -99,7 +100,14 @@ const History = () => {
 
     return (
       <GestureHandlerRootView>
-        <Swipeable renderRightActions={rightSwipeActions} ref={swipeableRef}>
+        <Swipeable
+          renderRightActions={rightSwipeActions}
+          ref={(ref) => {
+            if (ref && !swipeableRefs.current.has(item.dateTime)) {
+              swipeableRefs.current.set(item.dateTime, ref);
+            }
+          }}
+        >
           <TouchableOpacity onPress={() => toggleDetailsVisible(item)}>
             <View style={styles.historyItem}>
               <Icon name="circle" size={width * 0.054} color={status} />
