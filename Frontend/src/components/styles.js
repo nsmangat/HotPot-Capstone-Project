@@ -11,14 +11,14 @@ const styles = StyleSheet.create({
   },
   screenTitle: {
     color: "#1C6758",
-    fontSize: width * 0.1,
+    fontSize: width * 0.09,
     fontWeight: "bold",
-    marginLeft: width * 0.01,
+    // marginLeft: width * 0.01,
   },
   titleContainer: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: height * 0.05,
+    marginBottom: height * 0.02,
     paddingHorizontal: width * 0.03,
   },
 });

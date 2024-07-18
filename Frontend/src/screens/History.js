@@ -126,11 +126,6 @@ const History = () => {
       ]}
     >
       <ScreenTitle name="history" title="Reports History" />
-
-      <View style={styles.itemContainer}>
-        <ThemedText style={styles.title}>Location</ThemedText>
-        <ThemedText style={styles.title}>Time Reported</ThemedText>
-      </View>
       <FlatList
         data={history}
         renderItem={renderHistoryRow}
