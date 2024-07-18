@@ -27,8 +27,8 @@ const pool = new Pool({
   port: process.env.DB_PORT,
 });
 
-app.use(express.json()); 
-app.use('/protected', verifyToken);
+app.use(express.json());
+app.use("/protected", verifyToken);
 
 app.get("/protected/users", async (req, res) => {
   try {
@@ -41,10 +41,12 @@ app.get("/protected/users", async (req, res) => {
 });
 
 //User routes
-app.use('/protected/history',historyRoute);
+app.use("/protected/history", historyRoute);
 app.use("/protected/report", manualReportRoute);
 app.use("/protected/map", mapRoute);
 
-app.listen(port, () => {
+const server = app.listen(port, () => {
   console.log(`Server is running at http://${process.env.IP_ADDRESS}:${port}/`);
 });
+
+module.exports = server;
