@@ -6,8 +6,10 @@ const sequelize = require("../sequalize");
 const verifyToken = require("../firebase/authMiddleware");
 const { getAllPotholes } = require("../routes/MapService");
 const Report = require("../models/report");
-jest.mock("../models/report");
+
 // Setup mocks
+jest.mock("../routes/MapService");
+jest.mock("../models/report");
 jest.mock("../models/pothole");
 jest.mock("../firebase/authMiddleware", () =>
   jest.fn((req, res, next) => {
