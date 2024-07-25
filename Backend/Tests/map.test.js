@@ -4,7 +4,9 @@ const server = require("../server");
 const Pothole = require("../models/pothole");
 const sequelize = require("../sequalize");
 const verifyToken = require("../firebase/authMiddleware");
-
+const { getAllPotholes } = require("../routes/MapService");
+const Report = require("../models/report");
+jest.mock("../models/report");
 // Setup mocks
 jest.mock("../models/pothole");
 jest.mock("../firebase/authMiddleware", () =>
@@ -63,9 +65,11 @@ describe("GET /protected/map", () => {
     ];
 
     getAllPotholes.mockResolvedValue(mockPotholes);
-    // Pothole.findAll.mockResolvedValue(mockPotholes);
+    //Pothole.findAll.mockResolvedValue(mockPotholes);
 
     const response = await request(server).get("/protected/map");
+
+    console.log(response.body); 
 
     expect(response.status).toBe(200);
     expect(response.body).toEqual([
