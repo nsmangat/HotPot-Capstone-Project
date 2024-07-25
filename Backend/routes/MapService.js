@@ -29,4 +29,4 @@ async function getAllPotholes(firebaseUID) {
     }
 }
 
-module.exports = getAllPotholes;
+module.exports = {getAllPotholes};
