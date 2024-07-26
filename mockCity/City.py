@@ -8,6 +8,8 @@ import requests
 import google.generativeai as genai
 import time
 
+import logging
+
 
 
 #Loading the env
@@ -18,8 +20,27 @@ ORS_API_KEY = os.getenv("ORS_KEY")
 
 #All the functions needed for the script
 
+#Logger
+def setup_logger(name, log_file, level=logging.DEBUG):    
+    # Create a custom logger
+    logger = logging.getLogger(name)
+    logger.setLevel(level)
+
+    # Create handlers
+    file_handler = logging.FileHandler(log_file)
+    file_handler.setLevel(level)
+
+    # Create a formatter and set it for the handler
+    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    file_handler.setFormatter(formatter)
+
+    # Add the handler to the logger
+    logger.addHandler(file_handler)
+
+    return logger
+
 #Connection to the database
-def get_connection():
+def get_connection(logger):
     try:
         conn = psycopg2.connect(
             dbname=os.getenv("DB_NAME"),
@@ -29,12 +50,14 @@ def get_connection():
             port=os.getenv("DB_PORT")
         )
         print("Connection established successfully!")
+        logger.info("Connection established successfully!")
         return conn
     except Exception as e:
         print("Connection failed:", e)
+        logger.error("Connection failed:", e)
 
 #Settin gup the coordinates for the distance and time API
-def setupCoordinates(json_data, df):
+def setupCoordinates(json_data, df, logger):
 
     data = json.loads(json.dumps(json_data))
 
@@ -56,10 +79,12 @@ def setupCoordinates(json_data, df):
         coordinates[index] = [float(i) for i in coordinates[index]]
         coordinates[index] = [coordinates[index][1], coordinates[index][0]]
     
+    logger.info("Coordinates setup successfully for DistanceTime API.")
+
     return coordinates, order
 
 #Getting the distance and time from the API
-def getDistanceTime(coordinates):
+def getDistanceTime(coordinates, logger):
 
     #set the headers and the payload
     headers = {
@@ -88,6 +113,8 @@ def getDistanceTime(coordinates):
 
     duration.append(0)
     distance.append(0)
+
+    logger.info("Distance and Time successfully retrieved from the API.")
 
     return distance, duration
 
@@ -122,8 +149,8 @@ def getNextWorkingDay():
     return tomorrow
 
 #Write the estimated_fix_dates to the database
-def writeEstimates(estimatedFixDates):
-    conn = get_connection()
+def writeEstimates(estimatedFixDates, logger):
+    conn = get_connection(logger)
 
     cursor = conn.cursor()
 
@@ -140,15 +167,17 @@ def writeEstimates(estimatedFixDates):
         cursor.executemany(update_query, data)
         conn.commit()  
         print("Records updated successfully!")
+        logger.info("Estimates updated successfully!")
     except Exception as e:
         print("Failed to update records:", e)
+        logger.error("Failed to update records with estimates:", e)
         conn.rollback() 
 
     cursor.close()
     conn.close()
 
-def setEstimatesToNull():
-    conn = get_connection()
+def setEstimatesToNull(logger):
+    conn = get_connection(logger)
 
     cursor = conn.cursor()
 
@@ -156,15 +185,17 @@ def setEstimatesToNull():
         cursor.execute("UPDATE potholes SET estimated_fix_date = NULL")
         conn.commit()  
         print("Records updated to Null successfully!")
+        logger.info("Estimates set to Null successfully!")
     except Exception as e:
         print("Failed to update records:", e)
+        logger.error("Failed to set estimates to Null:", e)
         conn.rollback() 
 
     cursor.close()
     conn.close()
 
-def getAllPotholes():
-    conn = get_connection()
+def getAllPotholes(logger):
+    conn = get_connection(logger)
 
     cursor = conn.cursor()
 
@@ -176,6 +207,8 @@ def getAllPotholes():
     df = pd.DataFrame(rows, columns=[desc[0] for desc in cursor.description])
     cursor.close()
     conn.close()
+
+    logger.info("All potholes retrieved successfully.")
 
     return df
 
@@ -194,8 +227,11 @@ def df_to_markdown(df):
 
 
 def AI():
+
+    logger = setup_logger('AI', 'AI.log')
+
     #Get all the potholes
-    df = getAllPotholes()
+    df = getAllPotholes(logger)
 
     #Get the size, id and first date
     df_for_FirstPrompt = getSizeIDFirstDate(df)
@@ -255,11 +291,13 @@ def AI():
     #First AI response to JSON
     pothole_data = textToJson(response.text)
     #print(pothole_data)
+    logger.info("AI First Response successfull!")
+
 
     #Setup for 2nd AI Prompt
-    coordinates, order = setupCoordinates(pothole_data, df)
+    coordinates, order = setupCoordinates(pothole_data, df, logger)
 
-    distance, duration = getDistanceTime(coordinates)
+    distance, duration = getDistanceTime(coordinates, logger)
 
     df_for_SecondPrompt = convertDistanceTime(distance, duration, order, df_for_FirstPrompt)
 
@@ -298,12 +336,13 @@ def AI():
     estimated_fix_dates = textToJson(response2.text)
     estimated_fix_dates
 
-    setEstimatesToNull()
+    setEstimatesToNull(logger)
 
-    writeEstimates(estimated_fix_dates)
+    writeEstimates(estimated_fix_dates, logger)
 
     #Print when the AI was last run
     print("AI was last run at: ", time.ctime())
+    logger.info("AI finished run.")
 
 
 while True:
