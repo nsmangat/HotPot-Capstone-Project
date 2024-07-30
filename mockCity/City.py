@@ -53,7 +53,7 @@ def get_connection(logger):
         return conn
     except Exception as e:
         print("Connection failed:", e)
-        logger.error("Connection failed:", e)
+        logger.error(f"Connection failed: {e}")
 
 #Settin gup the coordinates for the distance and time API
 def setupCoordinates(json_data, df, logger):
@@ -169,7 +169,7 @@ def writeEstimates(estimatedFixDates, logger):
         logger.info("Estimates updated successfully!")
     except Exception as e:
         print("Failed to update records:", e)
-        logger.error("Failed to update records with estimates:", e)
+        logger.error(f"Failed to update records with estimates: {e}")
         conn.rollback() 
 
     cursor.close()
@@ -187,7 +187,7 @@ def setEstimatesToNull(logger):
         logger.info("Estimates set to Null successfully!")
     except Exception as e:
         print("Failed to update records:", e)
-        logger.error("Failed to set estimates to Null:", e)
+        logger.error(f"Failed to set estimates to Null: {e}")
         conn.rollback() 
 
     cursor.close()

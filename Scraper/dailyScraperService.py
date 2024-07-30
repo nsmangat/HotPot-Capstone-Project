@@ -6,12 +6,19 @@ from datetime import datetime, timedelta
 import pandas as pd
 import logging
 
+from scraper import submitForm
+
+# def submitForm(location, description, size):
+# location = Address
+# description = descriptio
+# size = pothole_size
+
 #Loading the env
 load_dotenv()
 
-def time_until_next_1am():
+def time_until_next_3am():
     now = datetime.now()
-    next_1am = now.replace(hour=1, minute=0, second=0, microsecond=0)
+    next_1am = now.replace(hour=3, minute=0, second=0, microsecond=0)
     if now >= next_1am:
         next_1am += timedelta(days=1)
     return (next_1am - now).total_seconds()
@@ -40,7 +47,6 @@ def close_logger(logger):
         handler.close()
         logger.removeHandler(handler)
 
-
 def get_connection(logger):
     try:
         conn = psycopg2.connect(
@@ -56,22 +62,19 @@ def get_connection(logger):
     except Exception as e:
         print("Connection failed:", e)
         logger.error(f"Connection failed: {e}")
+        
 
-
-
-def getAllPotholesToFix(logger):
+def getAllPotholesToReport(logger):
     conn = get_connection(logger)
 
     cursor = conn.cursor()
-    # Get today's date in YYYY-MM-DD format
-    today = datetime.today().date()
+    
     query = """
-        SELECT * FROM potholes 
-        WHERE is_fixed = false 
-        AND estimated_fix_date = %s
+        SELECT pothole_id, pothole_size, description, address FROM potholes 
+        WHERE is_reported = false
         """
     #Execute query with WHERE clause filtering for is_fixed=False and estimated_fix_date=today
-    cursor.execute(query, (today,))
+    cursor.execute(query)
 
     # Fetch results (if applicable)
     rows = cursor.fetchall()
@@ -83,73 +86,83 @@ def getAllPotholesToFix(logger):
     if df.empty:
         logger.info("No potholes received from DB.")
     else:
-        logger.info("All potholes that need to set to fixed retrieved successfully.")
+        logger.info("All potholes that need to reported retrieved successfully.")
 
     return df
 
-def setToFixed(df, logger):
+def setToReported(successIDS, logger):
     conn = get_connection(logger)
 
     cursor = conn.cursor()
 
-    update_query = "UPDATE potholes SET is_fixed = true WHERE pothole_id = %s"
+    update_query = "UPDATE potholes SET is_reported = true WHERE pothole_id = %s"
 
-    #both wokr the same to add date
-    data = [(row['pothole_id'],) for _, row in df.iterrows()]
-    #data = [(datetime.strptime(item['EstimatedFixDate'], '%Y-%m-%d').date(), item['pothole_id'],) for item in estimated_fix_dates]
-
-    #Set to Null again
-    #data = [(None, item['pothole_id'],) for item in estimated_fix_dates]
+    #Pothole IDs to be updated
+    data = [(pothole_id,) for pothole_id in successIDS]
 
     try:
         cursor.executemany(update_query, data)
         conn.commit()  
-        print("Records updated successfully!")
-        logger.info("Fix Status updated successfully!")
+        logger.info("Report Status updated successfully!")
+        
     except Exception as e:
         print("Failed to update records:", e)
-        logger.error(f"Failed to update records with Fix Status: {e}")
+        logger.error(f"Failed to update records with Report Status: {e}")
         conn.rollback() 
 
     cursor.close()
     conn.close()
+    
+    
 
-
-def fixPotholes(time):
-    #setting up logger
-    logger = setup_logger("FixPotholes", "FixPotholes.log")
-
-    #getting all potholes that need to be set to fixed
-    df = getAllPotholesToFix(logger)
-
+def ReportPotholes(time):
+    logger = setup_logger("ReportPotholes", "ReportPotholes.log")
+    #All the potholes that need to be reported
+    df = getAllPotholesToReport(logger)
+    
     #check if df is empty
     if df.empty:
-        logger.info("No potholes to fix today.")
+        logger.info("No potholes to report today.")
         logger.info("Last run at: " + str(time))
         close_logger(logger)
         return
+    
+    successIDS = []
 
-    #setting all potholes to fixed
-    setToFixed(df, logger)
-
+    for index, row in df.iterrows():
+        try:
+            result = submitForm(row['address'], row['description'], row['pothole_size'])
+            
+            if result:
+                successIDS.append(row['pothole_id'])
+                 
+            setToReported(successIDS, logger)
+            
+            close_logger(logger)
+        except Exception as e:
+            # print("Failed to submit form:", e)
+            logger.error(f"Failed to submit form: {e}")
+    
     logger.info("Last run at: " + str(time))
+            
 
-    close_logger(logger)
+    
 
 while True:
-    # Wait until 1 AM
-    wait_seconds = time_until_next_1am()
+    # Wait until 3 AM
+    wait_seconds = time_until_next_3am()
 
-    logger = setup_logger("FixPotholes", "FixPotholes.log")
-    message = "Waiting for 1AM to fix potholes, " + str(wait_seconds) + " seconds left."
+    logger = setup_logger("ReportPotholes", "ReportPotholes.log")
+    message = "Waiting for 3AM to fix potholes, " + str(wait_seconds) + " seconds left."
     logger.info(message)
     close_logger(logger)
 
     time.sleep(wait_seconds)
 
-    #Fix potholes
+    #Report potholes
     now = datetime.now()
-    fixPotholes(now)
+    ReportPotholes(now)
     
-    # Wait for 24 hours until the next 1 AM
+    
+    # Wait for 24 hours until the next 3AM
     time.sleep(24 * 3600 - wait_seconds)
