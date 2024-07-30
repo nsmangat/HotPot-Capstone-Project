@@ -49,7 +49,6 @@ def get_connection(logger):
             host=os.getenv("DB_HOST"),
             port=os.getenv("DB_PORT")
         )
-        print("Connection established successfully!")
         logger.info("Connection established successfully!")
         return conn
     except Exception as e:
