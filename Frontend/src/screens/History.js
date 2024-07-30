@@ -38,7 +38,8 @@ const History = () => {
         `http://${process.env.EXPO_PUBLIC_IP_ADDRESS}:3000/protected/history/`,
         { headers }
       );
-      setHistory(res.data);
+      const filteredHistory = res.data.filter((report) => !report.is_deleted); //only display reports that are not marked deleted
+      setHistory(filteredHistory);
     } catch (err) {
       console.error(err);
     }
@@ -86,6 +87,17 @@ const History = () => {
     }
   };
 
+  const formatDate = (dateTime) => {
+    const date = new Date(dateTime);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    const hours = String(date.getHours() % 12 || 12).padStart(2, "0"); // 12-hour format
+    const minutes = String(date.getMinutes()).padStart(2, "0");
+    const ampm = date.getHours() >= 12 ? "PM" : "AM";
+    return `${year}-${month}-${day} ${hours}:${minutes} ${ampm}`;
+  };
+
   const renderHistoryRow = ({ item }) => {
     const status = item.is_fixed ? "green" : "red";
     const rightSwipeActions = () => {
@@ -113,7 +125,9 @@ const History = () => {
               <Icon name="circle" size={width * 0.054} color={status} />
               <View style={styles.historyCol}>
                 <ThemedText style={styles.text}>{item.address}</ThemedText>
-                <ThemedText style={styles.text}>{item.dateTime}</ThemedText>
+                <ThemedText style={styles.text}>
+                  {formatDate(item.dateTime)}
+                </ThemedText>
               </View>
             </View>
           </TouchableOpacity>
@@ -152,10 +166,10 @@ const History = () => {
               Location: {selectedItem?.address}
             </ThemedText>
             <ThemedText style={styles.modalText}>
-              Date Time: {selectedItem?.dateTime}
+              Date Time: {formatDate(selectedItem?.dateTime)}
             </ThemedText>
             <ThemedText style={styles.modalText}>
-              Description: This is description
+              Description: {selectedItem?.description}
             </ThemedText>
             <ThemedText style={styles.modalText}>Size: Small</ThemedText>
             <TouchableOpacity

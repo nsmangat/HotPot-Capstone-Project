@@ -34,6 +34,11 @@ const Report = sequelize.define(
       allowNull: false,
       defaultValue: DataTypes.NOW,
     },
+    is_deleted:{
+      type:DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false,
+    }
   },
   {
     tableName: "reports",
