@@ -100,6 +100,7 @@ const Map = ({ navigation }) => {
 
   return (
     <View style={styles.TitleContainer}>
+      {/* <Text style={styles.title}>HotPot Pothole Tracker</Text> */}
       {/* <View name='buttonForDraggablePin' style={styles.titleContainer}>
         <ThemedText style={styles.screenTitle}>Map</ThemedText>
       </View> */}
@@ -129,10 +130,10 @@ const Map = ({ navigation }) => {
               <Callout>
                 <View style={{ flexDirection: 'column', alignItems: 'center', flexWrap: 'wrap'  }}>
                   <Text style={{ fontWeight: 'bold' }}>Location: {marker.Address.split(',')[0] + ',' + marker.Address.split(',')[1]}</Text>
-                  <Text>Size: {marker.Size}</Text>
-                  <Text>Number of Reports: {marker.NumberOfReports}</Text>
-                  <Text>First Reported Date: {new Date(marker.FirstReported).toLocaleString('en-US', { dateStyle: 'long', timeZone: 'UTC' })}</Text>                  
-                  <Text>Estimated Fix Date: {new Date(marker.EstimatedFixDate).toLocaleString('en-US', { dateStyle: 'long', timeZone: 'UTC' })}</Text>
+                  <Text><Text style={{ fontWeight: 'bold' }}>Size:</Text>{' '} {marker.Size}</Text>
+                  <Text><Text style={{ fontWeight: 'bold' }}>Number of Reports:</Text>{' '} {marker.NumberOfReports}</Text>
+                  <Text><Text style={{ fontWeight: 'bold' }}>First Reported Date:</Text>{' '} {new Date(marker.FirstReported).toLocaleString('en-US', { dateStyle: 'long', timeZone: 'UTC' })}</Text>                  
+                  <Text><Text style={{ fontWeight: 'bold' }}>Estimated Fix Date:</Text>{' '} {marker.EstimatedFixDate ? new Date(marker.EstimatedFixDate).toLocaleString('en-US', { dateStyle: 'long', timeZone: 'UTC' }) : "To Be Determined"}</Text>
                 </View>
               </Callout>
             </Marker>
@@ -169,6 +170,7 @@ const styles = StyleSheet.create({
     flex: 1,
     //padding: width * 0.03,
     paddingTop: height * 0.05,
+    backgroundColor: "#D9E9E6",
     //paddingBottom: height * 0.12,
   },
   itemContainer: {
@@ -182,6 +184,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: width * 0.05,
     fontWeight: "bold",
+    paddingLeft: width * 0.05,
   },
   text: {
     fontSize: width * 0.04,
