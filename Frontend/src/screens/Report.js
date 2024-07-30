@@ -19,6 +19,7 @@ import axios from "axios";
 import { getData } from "../utils/storage";
 import { useEffect } from "react";
 import { geocode } from "../utils/mapbox/geocodeService.js";
+import { Picker } from "@react-native-picker/picker";
 
 const Report = ({ route }) => {
   // const [location, setLocation] = useState("");
@@ -47,6 +48,10 @@ const Report = ({ route }) => {
   }, [route.params]); // Run only when route.params changes
 
   //console.log("REPORT -- Full Address: ", location, "Coordinates: ", coordinates);
+
+  useEffect(() => {
+    checkRequiredFields();
+  }, [location, details, description]);
 
   // For uploading image, not using this anymore
   const pickImage = async () => {
@@ -198,7 +203,7 @@ const Report = ({ route }) => {
               {/* <ThemedText>Uploading an image is optional.</ThemedText> */}
             </View>
             <CustomTextInput
-              placeholder="Example: 123 Main St."
+              placeholder="Example: 123 Anywhere St."
               title="Street Address:"
               required={true}
               onChangeText={(text) => {
@@ -230,17 +235,25 @@ const Report = ({ route }) => {
               checkRequiredFields={checkRequiredFields}
               value={details}
             />
-            <CustomTextInput
-              placeholder="Example: Large, shallow and round"
-              title="Pothole Description:"
-              required={true}
-              onChangeText={(text) => {
-                setDescription(text);
-                checkRequiredFields();
-              }}
-              // checkRequiredFields={checkRequiredFields}
-              value={description}
-            />
+            <View style={styles.customTextInputComponent.textInputContainer}>
+              <ThemedText style={styles.customTextInputComponent.label}>
+                <Text style={styles.customTextInputComponent.asterisk}>*</Text>
+                Pothole Size:
+              </ThemedText>
+              <Picker
+                selectedValue={description}
+                onValueChange={(itemValue) => {
+                  setDescription(itemValue);
+                  checkRequiredFields();
+                }}
+                style={styles.customTextInputComponent.customTextInput}
+              >
+                <Picker.Item label="Select pothole size" value="" />
+                <Picker.Item label="Small" value="Small" />
+                <Picker.Item label="Medium" value="Medium" />
+                <Picker.Item label="Large" value="Large" />
+              </Picker>
+            </View>
             <View style={styles.imageContainer}>
               <CustomButton
                 title="Submit"
