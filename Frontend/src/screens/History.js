@@ -38,7 +38,8 @@ const History = () => {
         `http://${process.env.EXPO_PUBLIC_IP_ADDRESS}:3000/protected/history/`,
         { headers }
       );
-      setHistory(res.data);
+      const filteredHistory = res.data.filter((report) => !report.is_deleted); //only display reports that are not marked deleted
+      setHistory(filteredHistory);
     } catch (err) {
       console.error(err);
     }

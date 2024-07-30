@@ -20,24 +20,27 @@ async function getUserReportHistory(firebaseUID) {
       is_fixed: report.Pothole.is_fixed,
       address: report.Pothole.address,
       size: report.Pothole.pothole_size,
+      is_deleted: report.is_deleted,
     }));
   } catch (err) {
     console.error("Error fetching user report history:", err);
   }
 }
 
-async function deleteHistory(firebaseUID, time_reported){
-  try{
-    const result = await Report.destroy({
-      where:
+async function deleteHistory(firebaseUID, time_reported) {
+  try {
+    const result = await Report.update(
+      { is_deleted: true },
       {
-        time_reported:time_reported,
-        firebase_uid: firebaseUID,
-      },
-    });
+        where: {
+          time_reported: time_reported,
+          firebase_uid: firebaseUID,
+        },
+      }
+    );
     return result;
-  }catch(err){
-    console.log("Error deleting history:", err);
+  } catch (err) {
+    console.log("Error updating history:", err);
   }
 }
 
