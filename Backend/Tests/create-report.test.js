@@ -115,4 +115,63 @@ describe("POST /protected/report", () => {
     expect(response.status).toBe(500);
     expect(response.text).toBe("Error reporting pothole");
   });
+
+  //Third test check if an existing pothole will get its report count incremented if same pothole address is reported
+  it("should increment the report count for an existing pothole", async () => {
+    const existingPothole = {
+      pothole_id: 1,
+      pothole_size: "medium test",
+      description: "Pothole unit test",
+      coordinates: "Test coordinates",
+      address: "whatever st",
+      number_of_reports: 1,
+      is_fixed: false,
+      first_reported_date: new Date(),
+      updated_at: new Date(),
+      is_reported: false,
+      save: jest.fn().mockResolvedValue(true), // Mock save method
+    };
+
+    const newReport = {
+      report_id: 1,
+      pothole_id: 1,
+      firebase_uid: "some-user-id",
+      report_date: new Date(),
+    };
+
+    //Mocking findOne and create methods for an existing pothole and new report
+    Pothole.findOne.mockResolvedValue(existingPothole);
+    Report.create.mockResolvedValue(newReport);
+
+    const response = await request(server)
+      .post("/protected/report")
+      .send({
+        description: "medium test",
+        details: "Pothole unit test",
+        coordinates: "Test coordinates",
+        address: "whatever st",
+      })
+      .set("Accept", "application/json");
+
+    //Assertions
+    expect(response.status).toBe(200);
+    expect(existingPothole.save).toHaveBeenCalled();
+    expect(response.body).toEqual([
+      expect.objectContaining({
+        pothole_id: 1,
+        pothole_size: "medium test",
+        description: "Pothole unit test",
+        coordinates: "Test coordinates",
+        address: "whatever st",
+        number_of_reports: 2, // Check if the number of reports is incremented
+        is_fixed: false,
+        is_reported: false,
+      }),
+      expect.objectContaining({
+        report_id: 1,
+        pothole_id: 1,
+        firebase_uid: "some-user-id",
+      }),
+    ]);
+  });
 });
