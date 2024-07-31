@@ -54,6 +54,10 @@ const Pothole = sequelize.define(
       allowNull: false,
       defaultValue: DataTypes.NOW,
     },
+    estimated_fix_date: {
+      type: DataTypes.DATE,
+      allowNull: true,
+    },
   },
   {
     // Disable timestamps, since by default it adds "createdAt" and "updatedAt" fields
