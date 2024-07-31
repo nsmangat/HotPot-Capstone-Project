@@ -6,14 +6,22 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import time
-
+import os
 
 def submitForm(location, description, size):
     try:
         #Driver for debugging
         # options = Options()
         # options.add_experimental_option("detach", True)
-        # driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
+        
+        chrome_install = ChromeDriverManager().install()
+        folder = os.path.dirname(chrome_install)
+        chromedriver_path = os.path.join(folder, "chromedriver.exe")
+        
+        #driver = webdriver.Chrome(service=Service(chromedriver_path), options=options)
+        
+        #Cant use the line below as I was getting the following error: [WinError 193] %1 is not a valid Win32 application
+        #driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
 
         #Main Driver(Chrome Window)
         #driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
@@ -24,7 +32,11 @@ def submitForm(location, description, size):
         options.add_argument('log-level=2')
         options.add_argument("--window-size=1920,1080")
 
-        driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
+        driver = webdriver.Chrome(service=Service(chromedriver_path), options=options)
+        
+        #This one doesnt work
+        # driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
+        
 
         #URL to City of Kitchener Report a Problem
         url = "https://form.kitchener.ca/CSD/CCS/Report-a-problem"

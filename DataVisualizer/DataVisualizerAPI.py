@@ -40,6 +40,7 @@ class Pothole(db.Model):
     is_fixed = db.Column(db.Boolean, nullable=False)
     is_reported = db.Column(db.Boolean, nullable=False)
     updated_at = db.Column(db.Date, nullable=False, default=func.now())
+    estimated_fix_date = db.Column(db.Date, nullable=False, default=func.now())
 
 class Report(db.Model):
     __tablename__ = 'reports'
