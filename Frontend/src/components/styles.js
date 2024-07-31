@@ -18,6 +18,8 @@ const styles = StyleSheet.create({
   titleContainer: {
     flexDirection: "row",
     alignItems: "center",
+    justifyContent: "space-between",
+    alignSelf: "center",
     marginBottom: height * 0.02,
     paddingHorizontal: width * 0.03,
   },
