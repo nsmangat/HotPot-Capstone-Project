@@ -6,6 +6,7 @@ import History from "./screens/History";
 import Map from "./screens/Map";
 import Settings from "./screens/Settings";
 import Report from "./screens/Report";
+import Leaderboard from "./screens/Leaderboard";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { SafeAreaView } from "react-native-safe-area-context";
 import DataVisualizations from "./screens/DataVisualizations";
@@ -92,7 +93,11 @@ const App = () => {
       <NavigationContainer>
         <Stack.Navigator screenOptions={{ headerShown: false }}>
           {user ? (
-            <Stack.Screen name="Home" component={AppContent} />
+            <>
+              <Stack.Screen name="Home" component={AppContent} />
+              <Stack.Screen name="Leaderboard" component={Leaderboard} />
+            </>
+
           ) : (
             <>
               <Stack.Screen name="Login" component={Login} />

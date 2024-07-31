@@ -50,6 +50,18 @@ const Settings = ({ navigation }) => {
     }
   };
 
+  const onLeaderboardPressed = async () => {
+    try {
+      console.info("LeaderboardButton");
+      navigation.navigate('Leaderboard');
+    } catch (error) {
+      console.error(error);
+      Alert.alert("Leaderboard failed", error.message, [
+        { text: "OK", onPress: () => console.log("OK Pressed") },
+      ]);
+    }
+  };
+
   return (
     <View
       style={[
@@ -73,6 +85,10 @@ const Settings = ({ navigation }) => {
       <View style={styles.itemContainer}>
         <ThemedText style={styles.moreText}>More</ThemedText>
       </View>
+      <TouchableOpacity style={styles.itemContainer} onPress={onLeaderboardPressed}>
+        <ThemedText style={styles.text}>Leaderboard</ThemedText>
+        <Icon name="chevron-right" size={width * 0.05} color="#999" />
+      </TouchableOpacity>
       <TouchableOpacity style={styles.itemContainer} onPress={onAboutUsPressed}>
         <ThemedText style={styles.text}>About Us</ThemedText>
         <Icon name="chevron-right" size={width * 0.05} color="#999" />
