@@ -275,6 +275,7 @@ const Report = ({ route }) => {
                 }}
                 style={styles.customTextInputComponent.customTextInput}
                 dropDownDirection="TOP" // or "BOTTOM"
+                listMode="SCROLLVIEW" // or "FLATLIST"
               />
             </View>
             <View style={styles.imageContainer}>
