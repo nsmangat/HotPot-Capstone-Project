@@ -5,6 +5,7 @@ import CustomButton from "../components/customButton";
 import { auth } from "../../firebase/firebase";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { storeData } from "../utils/storage";
+import axios from "axios";
 
 const SignUp = ({ navigation }) => {
   const [username, setUsername] = useState("");
@@ -21,8 +22,8 @@ const SignUp = ({ navigation }) => {
         password
       );
       const user = userCredential.user;
-
-      await storeData("user", user);
+      await storeData("bearerToken", user.stsTokenManager.accessToken);
+      await onSaveAccountToDB(user.stsTokenManager.accessToken);
 
       navigation.navigate("Home");
     } catch (error) {
@@ -50,6 +51,27 @@ const SignUp = ({ navigation }) => {
     console.info("Privacy Policy");
   };
 
+  const onSaveAccountToDB = async (bearerToken) => {
+    try {
+      console.log(bearerToken);
+      const headers = {
+        Authorization: `Bearer ${bearerToken}`,
+      };
+
+      const res = await axios.post(
+        `http://${process.env.EXPO_PUBLIC_IP_ADDRESS}:3000/protected/saveAccount/`,
+        {
+          email: email,
+          phoneNum: phoneNum,
+          username: username,
+        },
+        { headers }
+      );
+      console.log("Save Account to DB");
+    } catch (err) {
+      console.error(err);
+    }
+  };
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Create an account</Text>
