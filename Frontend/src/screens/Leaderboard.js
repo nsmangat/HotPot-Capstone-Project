@@ -1,8 +1,11 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { useFocusEffect } from "@react-navigation/native";
 import { View, Text, StyleSheet, Dimensions, FlatList, TouchableOpacity } from 'react-native';
 import { useTheme } from "../components/themeContext";
 import ScreenTitle from "../components/header";
 import ThemedText from "../components/themeText";
+import { getData } from "../utils/storage";
+import axios from "axios";
 
 const Leaderboard = () => {
     const { theme, themes } = useTheme();
@@ -11,31 +14,55 @@ const Leaderboard = () => {
 
     const [leaderboard, setLeaderboard] = useState([]);
 
-    //dummy data for leaderboard name and score
-    const leaderboardData = [
-        { name: "John", score: 100 },
-        { name: "Jane", score: 90 },
-        { name: "Jack", score: 80 },
-        { name: "Jill", score: 70 },
-        { name: "Jim", score: 60 },
-        { name: "Jenny", score: 50 },
-        { name: "Joe", score: 40 },
-        { name: "Jill", score: 30 },
-        { name: "Jill", score: 20 },
-        { name: "Jill", score: 10 },
-    ];
+    // //dummy data for leaderboard name and score
+    // const leaderboardData = [
+    //     { name: "John", score: 100 },
+    //     { name: "Jane", score: 90 },
+    //     { name: "Jack", score: 80 },
+    //     { name: "Jill", score: 70 },
+    //     { name: "Jim", score: 60 },
+    //     { name: "Jenny", score: 50 },
+    //     { name: "Joe", score: 40 },
+    //     { name: "Jill", score: 30 },
+    //     { name: "Jill", score: 20 },
+    //     { name: "Jill", score: 10 },
+    // ];
 
-    useEffect(() => {
-        setLeaderboard(leaderboardData);
-    }, []);
+    // useEffect(() => {
+    //     setLeaderboard(leaderboardData);
+    // }, []);
+
+    const getLeaderboard = async () => {
+        try {
+          const bearerToken = await getData("bearerToken");
+          const headers = {
+            Authorization: `Bearer ${bearerToken}`,
+          };
+    
+          const res = await axios.get(
+            `http://${process.env.EXPO_PUBLIC_IP_ADDRESS}:3000/protected/leaderboard/`,
+            { headers }
+          );
+          setLeaderboard(res.data);
+        } catch (err) {
+          console.error(err);
+        }
+    
+      }
+    
+      useFocusEffect(
+        useCallback(() => {
+          getLeaderboard();
+        }, [])
+      );
 
     const renderLeaderboardRow = ({ item }) => {
         return (
             <TouchableOpacity onPress={() => console.info("row pressed")}>
-                <View style={[styles.leaderboardItem, item.name === "Jenny" && styles.highlightedItem]}>
+                <View style={[styles.leaderboardItem, item.is_current_user && styles.highlightedItem]}>
                     <View style={styles.leaderboardCol}>
-                        <ThemedText style={styles.text}>{item.name}</ThemedText>
-                        <ThemedText style={styles.text}>{item.score}</ThemedText>
+                        <ThemedText style={styles.text}>{item.first_name}</ThemedText>
+                        <ThemedText style={styles.text}>{item.fixed_potholes_count}</ThemedText>
                     </View>
                 </View>
             </TouchableOpacity>

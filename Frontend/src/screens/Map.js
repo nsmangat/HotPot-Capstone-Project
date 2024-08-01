@@ -99,11 +99,11 @@ const Map = ({ navigation }) => {
 
 
   return (
-    <View style={styles.TitleContainer}>
-      {/* <Text style={styles.title}>HotPot Pothole Tracker</Text> */}
-      {/* <View name='buttonForDraggablePin' style={styles.titleContainer}>
-        <ThemedText style={styles.screenTitle}>Map</ThemedText>
-      </View> */}
+    // <View style={styles.TitleContainer}>
+    //   {/* <Text style={styles.title}>HotPot Pothole Tracker</Text> */}
+    //   {/* <View name='buttonForDraggablePin' style={styles.titleContainer}>
+    //     <ThemedText style={styles.screenTitle}>Map</ThemedText>
+    //   </View> */}
       <View style={styles.container}>
         <MapView
           style={{ flex: 1 }}
@@ -153,7 +153,7 @@ const Map = ({ navigation }) => {
 
         </MapView>
       </View>
-    </View>
+    // </View>
   );
 };
 
@@ -163,7 +163,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     //padding: width * 0.03,
-    paddingTop: height * 0.1,
+    //paddingTop: height z* 0.1,
     //paddingBottom: height * 0.12,
   },
   TitleContainer: {
