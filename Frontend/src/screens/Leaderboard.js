@@ -14,24 +14,6 @@ const Leaderboard = () => {
 
     const [leaderboard, setLeaderboard] = useState([]);
 
-    // //dummy data for leaderboard name and score
-    // const leaderboardData = [
-    //     { name: "John", score: 100 },
-    //     { name: "Jane", score: 90 },
-    //     { name: "Jack", score: 80 },
-    //     { name: "Jill", score: 70 },
-    //     { name: "Jim", score: 60 },
-    //     { name: "Jenny", score: 50 },
-    //     { name: "Joe", score: 40 },
-    //     { name: "Jill", score: 30 },
-    //     { name: "Jill", score: 20 },
-    //     { name: "Jill", score: 10 },
-    // ];
-
-    // useEffect(() => {
-    //     setLeaderboard(leaderboardData);
-    // }, []);
-
     const getLeaderboard = async () => {
         try {
           const bearerToken = await getData("bearerToken");

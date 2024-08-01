@@ -162,16 +162,11 @@ const { width, height } = Dimensions.get("window");
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    //padding: width * 0.03,
-    //paddingTop: height z* 0.1,
-    //paddingBottom: height * 0.12,
   },
   TitleContainer: {
     flex: 1,
-    //padding: width * 0.03,
     paddingTop: height * 0.05,
     backgroundColor: "#D9E9E6",
-    //paddingBottom: height * 0.12,
   },
   itemContainer: {
     flexDirection: "row",
@@ -194,19 +189,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     marginLeft: width * 0.03,
-  },
-  closeButton: {
-    position: "absolute",
-    right: 10,
-    top: 10,
-  },
-  blurContainer: {
-    flex: 1,
-    overflow: "hidden",
-  },
-  deleteButton: {
-    backgroundColor: "red",
-    color: "white",
   },
 });
 
