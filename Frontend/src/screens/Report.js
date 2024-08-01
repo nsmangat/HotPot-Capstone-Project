@@ -20,6 +20,7 @@ import { getData } from "../utils/storage";
 import { useEffect } from "react";
 import { geocode } from "../utils/mapbox/geocodeService.js";
 import { Picker } from "@react-native-picker/picker";
+import DropDownPicker from 'react-native-dropdown-picker';
 
 const Report = ({ route }) => {
   // const [location, setLocation] = useState("");
@@ -32,6 +33,14 @@ const Report = ({ route }) => {
   const [requiredFieldsFilled, setRequiredFieldsFilled] = useState(false);
   const { theme, themes, toggleTheme } = useTheme();
   const currentTheme = themes[theme];
+  const [open, setOpen] = useState(false);
+  const [items, setItems] = useState([
+    { label: 'Select pothole size', value: '' },
+    { label: 'Small', value: 'Small' },
+    { label: 'Medium', value: 'Medium' },
+    { label: 'Large', value: 'Large' },
+  ]);
+
 
   //Location stuff from map
   useEffect(() => {
@@ -240,7 +249,7 @@ const Report = ({ route }) => {
                 <Text style={styles.customTextInputComponent.asterisk}>*</Text>
                 Pothole Size:
               </ThemedText>
-              <Picker
+              {/* <Picker
                 selectedValue={description}
                 onValueChange={(itemValue) => {
                   setDescription(itemValue);
@@ -252,7 +261,22 @@ const Report = ({ route }) => {
                 <Picker.Item label="Small" value="Small" />
                 <Picker.Item label="Medium" value="Medium" />
                 <Picker.Item label="Large" value="Large" />
-              </Picker>
+              </Picker> */}
+              <DropDownPicker
+                open={open}
+                value={description}
+                items={items}
+                setOpen={setOpen}
+                setValue={setDescription}
+                setItems={setItems}
+                onChangeValue={(itemValue) => {
+                  setDescription(itemValue);
+                  checkRequiredFields();
+                }}
+                style={styles.customTextInputComponent.customTextInput}
+                dropDownDirection="TOP" // or "BOTTOM"
+                listMode="SCROLLVIEW" // or "FLATLIST"
+              />
             </View>
             <View style={styles.imageContainer}>
               <CustomButton

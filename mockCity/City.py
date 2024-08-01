@@ -287,6 +287,13 @@ def AI():
     # print("AI First Response:\n")
     # print(response.text)
 
+    #Check if there is response.text
+    if response.text == "":
+        print("No response from AI")
+        logger.error("No response from AI")
+        return    
+    
+    
     #First AI response to JSON
     pothole_data = textToJson(response.text)
     #print(pothole_data)
@@ -330,6 +337,12 @@ def AI():
 
     response2 = chat_session.send_message(prompt2)
 
+    #Check if there is response.text
+    if response2.text == "":
+        print("No response from AI")
+        logger.error("No response from AI")
+        return   
+    
     #print(response2.text)
 
     estimated_fix_dates = textToJson(response2.text)
