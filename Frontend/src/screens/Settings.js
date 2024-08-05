@@ -40,7 +40,7 @@ const Settings = ({ navigation }) => {
     console.info("Logout");
     try {
       await signOut(auth);
-      await removeData("user");
+      await removeData("bearerToken");
       navigation.navigate("Login");
     } catch (error) {
       console.error(error);

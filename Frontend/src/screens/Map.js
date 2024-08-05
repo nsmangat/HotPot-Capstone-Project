@@ -18,6 +18,7 @@ import { getData } from "../utils/storage";
 import axios from "axios";
 
 const Map = ({ navigation }) => {
+  const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
   const { theme, themes, toggleTheme } = useTheme();
   const currentTheme = themes[theme];
 
@@ -46,9 +47,14 @@ const Map = ({ navigation }) => {
 
   }
 
-  useFocusEffect(
+    useFocusEffect(
     useCallback(() => {
-      getPotholes();
+      const fetchData = async () => {
+        await delay(1000);
+        await getPotholes();
+      };
+
+      fetchData();
     }, [])
   );
 
