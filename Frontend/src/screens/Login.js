@@ -31,17 +31,18 @@ const Login = ({ navigation }) => {
       );
       const user = userCredential.user;
       console.log(user.stsTokenManager.accessToken);
-      if (rememberMe) {
-        await storeData("user", user);
-      } else {
-        await removeData("user");
-      }
+      // if (rememberMe) {
+      //   await storeData("user", user);
+      // } else {
+      //   await removeData("user");
+      // }
 
       //save bearer token to async storage for other components to use
       await storeData("bearerToken", user.stsTokenManager.accessToken);
 
       navigation.navigate("Home");
     } catch (error) {
+      console.log("Login Error ",error)
       Alert.alert("Incorrect input!", "Please re-enter your login input", [
         { text: "OK", onPress: () => console.log("OK Pressed") },
       ]);
